@@ -7,7 +7,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
-    "@prisma/client": "^5.13.0",
+    "@prisma/client": "^6.5.0",
     "axios": "^1.8.3",
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
@@ -30,7 +30,7 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "cross-env HOST=dev.homebridge.com PORT=3000 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
