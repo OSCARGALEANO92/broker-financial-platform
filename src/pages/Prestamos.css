@@ -1,0 +1,353 @@
+/* 📌 Asegurar que el body ocupe toda la pantalla */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 📌 Contenedor principal de la solicitud de préstamo */
+.prestamos-container {
+  flex: 1;
+  width: calc(100vw - 1px);  /* 🔹 Restamos el ancho del sidebar */
+  margin-left: 0; /* 🔹 Asegurar alineación con el dashboard */
+  margin: 0;
+  background: none; /* 🔹 Elimina el fondo */
+  box-shadow: none; /* 🔹 Quita el sombreado */
+  border: none; /* 🔹 Elimina el borde */
+  display: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* 📌 Asegurar espacio en la parte superior */
+.prestamos-content {
+  padding-top: 20px;
+  width: 100%;
+  max-width: 90%;
+}
+
+/* 📌 Título principal */
+.prestamos-title {
+  font-size: 40px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px; /* 🔹 Espacio suficiente para no chocar con la barra */
+  margin-bottom: 5px;
+  text-align: center;
+  width: 100%;
+}
+
+/* 📌 Ajustar el mensaje de confirmación */
+.prestamos-mensaje {
+  font-size: 16px; /* 🔹 Hacerlo más grande */
+  font-weight: bold;
+  text-align: center;
+  color: #28a745; /* ✅ Verde para indicar éxito */
+  margin-top: 10px; /* 🔹 Separarlo del título */
+  max-width: 3000px; /* 🔹 Controlar el tamaño */
+  background: #d4edda; /* 🔹 Fondo verde claro */
+  padding: 15px; /* 🔹 Espaciado interno */
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 📌 Formulario en formato horizontal */
+.prestamos-form-container {
+  margin-bottom: 1px;
+  padding-bottom: 5px; /* Reduce el espacio interno si es necesario */
+  margin-top: 5px;
+  padding-top: 0px;
+  width: 90%;
+  max-width: 1300px; /* 🔹 Evita que se achique demasiado */
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 90px;
+  overflow-y: auto; /* 🔹 Activa el scroll */
+  max-height: 80vh; /* 🔹 Limita la altura del contenedor */
+}
+
+/* 📌 Secciones del formulario */
+.prestamos-form-section {
+  margin-top: -100px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* 🔹 Distribuir uniformemente */
+  gap: 10px;
+  border: none;
+  background: none;
+  padding: 10px 0;
+
+}
+
+/* 📌 Eliminar todos los bordes de la tabla */
+.prestamos-form-section table {
+  border-collapse: collapse; /* Evita separación entre celdas */
+  border: none; /* Elimina cualquier borde */
+}
+
+/* 📌 Eliminar bordes de celdas y encabezados */
+.prestamos-form-section th,
+.prestamos-form-section td {
+  border: none !important; /* Elimina cualquier borde */
+  background-color: transparent; /* Fondo limpio */
+  box-shadow: none; /* Evita sombras que simulen bordes */
+}
+
+/* 📌 Eliminar bordes de filas */
+.prestamos-form-section tr {
+  border: none !important; /* Elimina las líneas entre filas */
+}
+
+/* 📌 Ajuste de los inputs para que ocupen toda la fila */
+.prestamos-form-grid {
+  margin-bottom: 80px !important;  /* 🔹 Reduce espacio entre los inputs */
+  padding: 8px;                  /* 🔹 Ajusta el padding interno */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  width: 100%;
+}
+
+/* 📌 Estilos para los campos de entrada */
+.prestamos-form-grid input, 
+.prestamos-form-grid select {
+  flex: 1;
+  min-width: 250px; /* 🔹 Reduce el ancho mínimo */
+  max-width: 300px; /* 🔹 Controla el ancho */
+  height: 40px; /* 🔹 Reducir la altura de los campos */
+  font-size: 14px; /* 🔹 Tamaño de fuente más compacto */
+  padding: 10px; /* 🔹 Reduce el padding interno */
+  margin: px; /* 🔹 Menos espacio entre los campos */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px; /* 🔹 Espaciado entre inputs */
+}
+
+/* 📌 Ajustar los campos de celular para que no ocupen toda la fila */
+.prestamos-form-grid input[name="celular1"] {
+  grid-column: auto; /* 🔹 Evita que se expanda al 100% */
+}
+
+/* 📌 Ajuste especial para la selección de bancos */
+.prestamos-bank-select {
+  width: 200%; /* Ocupa todo el ancho */
+  height: 150px; /* 🔹 Aumenta la altura del cuadro */
+  font-size: 16px; /* 🔹 Hace que el texto sea más grande */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  overflow-y: auto; /* 🔹 Agrega barra de desplazamiento si hay muchos bancos */
+}
+
+/* 📌 Ajuste para permitir desplazamiento en Step 4 */
+.prestamos-step-4 {
+  height: 400px; /* 🔹 Limita la altura de la sección */
+  min-height: 0px; /* 🔹 Permitir expansión si hay más contenido */
+  overflow-y: scroll;  /* 🔹 Activa el scroll vertical si hay contenido extra */
+  padding: 15px;
+  border: 1px solid #ccc; /* 🔹 Opcional: Para diferenciar el área desplazable */
+  border-radius: 8px;
+  background-color: #f9f9f9; /* 🔹 Opcional: Fondo ligero para destacar */
+}
+
+/* 📌 Documentos organizados en filas */
+.prestamos-documentos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* 📌 Label de los archivos a subir */
+.prestamos-documentos-grid label {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  font-weight: bold;
+  color: #444;
+  gap: 5px;
+  flex: 1;
+  min-width: 350px;
+}
+
+/* 📌 Botón de carga de archivos */
+.prestamos-file-upload {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 📌 Ajuste de los botones de navegación */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.button {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.button-back {
+  background-color: #888;
+  color: white;
+}
+
+.button-next {
+  background-color: #007bff;
+  color: white;
+}
+
+.button-submit {
+  background-color: #28a745;
+  color: white;
+}
+
+label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* 📌 Ajustes para alinear correctamente los labels */
+.label-input-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.label-input-container label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* 📌 Estilo para la Calculadora */
+.calculator-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.calculate-button {
+  background-color: #28a745;
+  color: white;
+  font-size: 16px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.calculate-button:hover {
+  background-color: #218838;
+}
+
+.cuota-result {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.input-group {
+  display: flex;
+  gap: 15px; /* Espaciado entre inputs */
+  width: 100%;
+}
+
+.input-group input {
+  flex: 1; /* Distribuir el espacio */
+  min-width: 200px; /* Ancho mínimo para evitar que se encimen */
+}
+
+
+
+/* 📌 Diseño Responsivo */
+@media (max-width: 1024px) {
+  .prestamos-container {
+      width: 100%;
+      margin-left: 14rem;
+      padding: 15px;
+  }
+
+  .prestamos-form-grid,
+  .prestamos-documentos-grid {
+      flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .prestamos-container {
+      width: calc(100% - 12rem);
+      margin-left: 12rem;
+      padding: 10px;
+  }
+
+  .prestamos-form-grid,
+  .prestamos-documentos-grid {
+      flex-direction: column;
+  }
+
+  .prestamos-title {
+      font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .prestamos-container {
+      width: calc(100% - 10rem);
+      margin-left: 10rem;
+      padding: 8px;
+  }
+
+  .prestamos-title {
+      font-size: 1.5rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

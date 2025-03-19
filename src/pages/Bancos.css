@@ -1,0 +1,103 @@
+/* 📌 Asegurar que el body ocupe toda la pantalla */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 📌 Contenedor principal */
+.bancos-container {
+    width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
+    height: 400px;  /* Alto fijo */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 30px; /* ✅ Ajustado para pegarse más a la parte superior */
+    overflow: auto; /* ✅ Permite desplazamiento si hay muchas filas */
+    background: none; /* ❌ Elimina el fondo blanco */
+    box-shadow: none; /* ❌ Elimina la sombra */
+    border: none; /* ❌ Elimina el borde */
+}
+
+/* 📌 Ajuste del título */
+.bancos-title {
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 50px; /* ✅ Pegado más a la parte superior */
+    margin-bottom: 30px;
+    text-align: flex;
+    width: 100%;
+}
+
+/* 📌 Descripción */
+.bancos-description {
+    text-align: center;
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* 📌 Contenedor de la tabla */
+.bancos-table-container {
+    width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
+    max-width: 1200px; /* ✅ Ajuste de tamaño */
+    background: none;
+    border-radius: 10px;
+    padding: 0px;
+    box-shadow: none
+}
+
+/* 📌 Estilo de la tabla */
+.bancos-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    background: none;
+}
+
+/* 📌 Encabezado de la tabla */
+.bancos-table-container th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 12px;
+    text-align: center;
+}
+
+/* 📌 Celdas de la tabla */
+.bancos-table-container td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 📌 Resaltar fila al pasar el cursor */
+.bancos-table-container tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 📌 Botón de detalles */
+.bancos-details-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+}
+
+.bancos-details-button:hover {
+    background-color: #0056b3;
+}
+
+

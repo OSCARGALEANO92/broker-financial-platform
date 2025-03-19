@@ -1,0 +1,132 @@
+/* 📌 Contenedor principal */
+.DetallesBanco-container {
+    width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+/* 📌 Título del Banco */
+.DetallesBanco-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    color: #222;
+    width: 100%;
+}
+
+.DetallesBanco-title span {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* 📌 Descripción */
+.DetallesBanco-description {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 20px;
+    max-width: 80%;
+}
+
+/* 📌 Cuadros de resumen */
+.DetallesBanco-resumen {
+    display: flex;
+    justify-content: flex-start;
+    gap: 70px;
+    margin-bottom: 10px;
+}
+
+.resumen-card {
+    width: 200px;
+    padding: 15px;
+    border-radius: 8px;
+    color: rgb(0, 0, 0);
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.aprobado {
+    background-color: #28a745;
+}
+
+.pendiente {
+    background-color: #ffc107;
+}
+
+.rechazado {
+    background-color: #dc3545;
+}
+
+/* 📌 Contenedor de la tabla */
+.DetallesBanco-table-container {
+    width: 90%;
+    max-width: 1000px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+/* 📌 Estilos de la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f8f9fa;
+}
+
+/* 📌 Estados */
+.estado-aprobado {
+    background-color: #28a745;
+    color: rgb(0, 0, 0);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.estado-pendiente {
+    background-color: #ffc107;
+    color: rgb(0, 0, 0);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.estado-rechazado {
+    background-color: #dc3545;
+    color: rgb(0, 0, 0);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* 📌 Botón de volver */
+.DetallesBanco-button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.DetallesBanco-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+

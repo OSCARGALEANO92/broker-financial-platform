@@ -1,0 +1,39 @@
+/* 📌 Asegurar que el botón de ajustes esté abajo */
+.sidebar {
+    display: flex;
+    width: 14rem; /* Mantiene el tamaño fijo de la barra lateral */
+    padding-top: 20px;
+    min-height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #111; /* Color oscuro para la barra lateral */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ajusta el contenido */
+  }
+  
+  /* 📌 Botón de ajustes */
+  .sidebar-footer {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+  }
+  
+  .settings-button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    width: 90%;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .settings-button:hover {
+    background-color: #555;
+  }
+  

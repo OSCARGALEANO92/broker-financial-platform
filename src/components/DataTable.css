@@ -1,0 +1,52 @@
+.table-container {
+    width: 80%;
+    margin: 40px auto;
+    padding: 80px;
+    background-color: white; /* Fondo blanco para la tabla */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  }
+
+  .table-title {
+    text-align: left;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .estado-completo {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .estado-incompleto {
+    color: orange;
+    font-weight: bold;
+  }
+  
+  .filter-button {
+    background-color: #17a2b8 !important;
+    color: white;
+  }
+
+  .card {
+    border-radius: 20px;
+    background: #ffffff;
+  }
+  
+  .card h2 {
+    font-size: 22px;
+    font-weight: bold;
+  }
+  
+  .card p {
+    font-size: 16px;
+    margin-top: 5px;
+  }
+  

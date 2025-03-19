@@ -1,0 +1,265 @@
+/* 📌 Asegurar que el body tenga barra de desplazamiento */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: auto; /* ✅ Permite desplazamiento vertical */
+}
+
+/* 📌 Contenedor Principal */
+.clientes-container {
+  width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
+  height: 100vh; /* 🔹 Ocupar toda la altura */
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.mensaje-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .estado-select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .guardar-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .guardar-btn:hover {
+    background-color: #0056b3;
+  }
+
+.clientes-title {
+  font-size: 40px; /* 🔹 Reducido */
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* 📌 Ajuste de la tabla */
+.clientes-table {
+  width: 100%;
+  max-width: 90%;
+  border-collapse: collapse;
+}
+
+/* 📌 Ajuste de la cabecera */
+.clientes-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    padding: 12px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+/* 📌 Aplicar estilos a las celdas */
+.clientes-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+/* Contenedor principal de los filtros */
+.clientes-filtros {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* Estilos de los filtros */
+.clientes-input, 
+.clientes-select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    width: 220px;
+    background-color: #fff;
+    outline: none;
+}
+
+/* Botones de exportación */
+.clientes-export-btn {
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.clientes-export-btn:hover {
+  background-color: #218838;
+}
+
+/* Mejorando el select de selección múltiple */
+.select-multiple {
+  width: 200%; /* Ocupa todo el ancho */
+  height: 34px; /* 🔹 Aumenta la altura del cuadro */
+  font-size: 16px; /* 🔹 Hace que el texto sea más grande */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  overflow-y: auto;
+}
+
+/* Botones de exportación */
+.export-buttons {
+  display: flex;
+  gap: 10px;
+}
+.export-buttons button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.export-buttons button:hover {
+  background-color: #218838;
+}
+
+/* 📌 Estilos para los botones de detalles */
+.clientes-button {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.clientes-button:hover {
+    background-color: #218838;
+}
+
+/* 📌 Paginación */
+.clientes-pagination {
+    display: flex;
+    justify-content: flex-start; /* ✅ Alineado a la izquierda */
+    align-items: center;
+    margin-left: 0; /* 🔹 Elimina margen no deseado */
+    margin-top: 10px;
+    padding-left: 10px;
+    position: relative;
+    bottom: 10px;
+    left: -34rem;
+}
+
+/* 📌 Botones de paginación */
+.clientes-pagination button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 2px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.clientes-pagination button:disabled {
+    color: gray;
+    cursor: not-allowed;
+}
+
+.estado-aceptado {
+    background-color: #28a745; /* Verde */
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .estado-rechazado {
+    background-color: #dc3545; /* Rojo */
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .estado-pendiente {
+    background-color: #ffc107; /* Amarillo */
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
+  }
+  
+  .accion-select, .mensaje-textarea {
+    width: 100%;
+    margin-top: 5px;
+  }
+  
+  .enviar-mensaje {
+    background-color: #28a745;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 5px;
+  }
+  
+  .enviar-mensaje:hover {
+    background-color: #218838;
+  }
+  
+
+/* 📌 Responsive */
+@media (max-width: 768px) {
+    .clientes-table th, .clientes-table td {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+
+  
