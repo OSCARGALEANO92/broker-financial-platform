@@ -278,7 +278,6 @@ app.put('/brokers/:id', async (req, res) => {
   }
 });
 
-// ✅ Subir documentos desde cliente detalle
 app.post("/clientes/:documento/upload", upload.array("archivos"), async (req, res) => {
   const { documento } = req.params;
   const archivosSubidos = req.files;
@@ -386,6 +385,5 @@ app.post('/usuarios', async (req, res) => {
 
 
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`✅ Servidor corriendo en http://${process.env.HOST || '0.0.0.0'}:${port}`);
 });
-
