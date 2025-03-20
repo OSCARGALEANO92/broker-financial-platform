@@ -23,7 +23,7 @@ const Clientes = () => {
   const [estados, setEstados] = useState({});
   const [mensajes, setMensajes] = useState({});
   const [paginaActual, setPaginaActual] = useState(1);
-  const clientesPorPagina = 6;
+  const clientesPorPagina = 10;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -90,6 +90,11 @@ const Clientes = () => {
     const mensaje = mensajes[id] || "";
     const nuevoEstado = estados[id] || "Pendiente";
 
+    if (userRole === "banco" && mensaje.trim() === "") {
+      alert("❌ Debes escribir un mensaje antes de actualizar el estado.");
+      return;
+    }
+
   // 🔹 Actualizar el estado del cliente en la lista
   setClientes((prevClientes) =>
     prevClientes.map((cliente) =>
@@ -124,7 +129,7 @@ const Clientes = () => {
     const doc = new jsPDF();
     doc.text("Lista de Clientes", 14, 10);
     autoTable(doc, {
-      head: [["Documento", "Nombre", "Teléfono", "Dirección", "Préstamo", "Banco", "Estado", "Fecha"]],
+      head: [["Fecha Creacion", "Documento", "Nombre", "Teléfono", "Dirección", "Préstamo", "Banco", "Estado", "Fecha"]],
       body: filteredClientes.map((cliente) => [
         cliente.fechaCreacion,
         cliente.documento,
@@ -153,6 +158,7 @@ const Clientes = () => {
           <option value="Pendiente">Pendiente</option>
           <option value="Aprobado">Aprobado</option>
           <option value="Rechazado">Rechazado</option>
+          <option value="Verificando">Verificando</option>
         </select>
 
         <select value={selectedBanco} onChange={(e) => setSelectedBanco(e.target.value)} className="clientes-select">
@@ -180,7 +186,7 @@ const Clientes = () => {
             <th>Fecha</th>
             <th>Detalles</th>
             {/* **✅ Mostrar Acciones solo si el usuario es "banco"** */}
-            {userRole === "banco" && <th>Acciones</th>}
+            {(userRole === "banco" || userRole === "broker") && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -201,7 +207,7 @@ const Clientes = () => {
                 </button>
               </td>
             {/* **✅ Mostrar el botón de Acciones solo si el usuario es "banco"** */}
-            {userRole === "banco" && (
+            {(userRole === "banco" || userRole === "broker") && (
             <td className="acciones-container">
             {/* Botón de Acciones */}
             <button 
@@ -214,8 +220,11 @@ const Clientes = () => {
             {/* Menú desplegable */}
             {activeMenu === cliente.id && (
               <div className="acciones-menu">
+                {userRole === "banco" && (
+                        <>
                 <select value={estados[cliente.id] || cliente.estado} onChange={(e) => handleEstadoChange(cliente.id, e.target.value)} className="accion-select">
                   <option value="Pendiente">Pendiente</option>
+                  <option value="Verificando">Verificando</option>
                   <option value="Aprobado">Aprobado</option>
                   <option value="Rechazado">Rechazado</option>
                 </select>
@@ -225,7 +234,18 @@ const Clientes = () => {
                   value={mensajes[cliente.id] || ""}
                   onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}
                 ></textarea>
-                <button className="enviar-mensaje" onClick={() => handleGuardar(cliente.id)}>Enviar</button>
+                </>
+              )}
+              {userRole === "broker" && (
+                        <textarea
+                          className="mensaje-textarea"
+                          placeholder="Mensaje..."
+                          value={mensajes[cliente.id] || ""}
+                          onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}
+                        ></textarea>
+              )}
+                <button className="enviar-mensaje" onClick={() => handleGuardar(cliente.id)}>
+                  {userRole === "banco" ? "Verificar" : "Enviar"}</button>
               </div>
             )}
           </td>  
@@ -238,10 +258,10 @@ const Clientes = () => {
       {/* 📌 Paginación */}
       <div className="clientes-pagination">
         <button onClick={anteriorPagina} disabled={paginaActual === 1}>
-          ← Prev
+          ← Anterior
           </button>
         <button onClick={siguientePagina} disabled={paginaActual === totalPaginas}>
-          Next →
+          Siguiente →
           </button>
       </div>
     </div>

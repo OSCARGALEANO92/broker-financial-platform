@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Prestamos.css"; 
 
 const Prestamos = () => {
   const navigate = useNavigate(); 
+  const [bancos, setBancos] = useState([]);
   const [formData, setFormData] = useState({
     nombres: "",
     documento: "",
@@ -23,13 +24,20 @@ const Prestamos = () => {
     monto: "",
     plazo: "",
     destino: "",
-    bancos: [],
+    bancoSeleccionado: [],
     coodeudor: false,
     documentos: {
-      cedula: null,
-      ruc: null,
-      iva: null,
-      salario: null
+      cedula: [],
+      factura: [],
+      salario: [],
+      certificado: [],
+      cct: [],
+      ruc: [],
+      iva: [],
+      cartaoferta: [],
+      tazacion: [],
+      extracto: [],
+      cedulacodeudor: [],
     },
   });
 
@@ -37,17 +45,6 @@ const Prestamos = () => {
   const [mensaje, setMensaje] = useState("");
   const [interes, setInteres] = useState(0);
   const [cuota, setCuota] = useState("");
-
-  // Lista de bancos con tasas de interés
-  const bancosDisponibles = [
-    { nombre: "Banco Ueno", tasa: 10 },
-    { nombre: "Banco Itau", tasa: 8 },
-    { nombre: "Banco Basa", tasa: 9 },
-    { nombre: "Banco Familiar", tasa: 10.5 },
-    { nombre: "Banco Sudameris", tasa: 11 },
-    { nombre: "Banco Nacional de Fomento", tasa: 9.5 },
-    { nombre: "Banco Atlas", tasa: 9 },
-  ];
 
   const formatNumber = (value) => {
   return new Intl.NumberFormat("es-ES").format(value.replace(/\D/g, ""));
@@ -77,11 +74,21 @@ const handleBlur = (e) => {
     }
   };
 
+  useEffect(() => {
+    // Simulación de obtención de bancos desde `Bancos.js`
+    const bancosGuardados = JSON.parse(localStorage.getItem("bancosDisponibles")) || [];
+    setBancos(bancosGuardados);
+  }, []);
+
   const handleBankSelection = (e) => {
-    const selectedBank = bancosDisponibles.find(bank => bank.nombre === e.target.value);
-    setFormData({ ...formData, bancos: [e.target.value] });
-    setInteres(selectedBank ? selectedBank.tasa : 0);
+    const bancoSeleccionado = bancos.find(bank => bank.entidad === e.target.value);
+    setFormData(prev => ({
+      ...prev,
+      bancoSeleccionado: e.target.value
+    }));
+    setInteres(bancoSeleccionado ? parseFloat(bancoSeleccionado.tasaInteres) : 0);
   };
+
 
   // Calcular cuota con formato de miles
   const calcularCuota = () => {
@@ -98,14 +105,15 @@ const handleBlur = (e) => {
     }
   };
 
-  const handleFileUpload = (e, docType) => {
-    setFormData({
-      ...formData,
+  const handleFileUpload = (event, tipoDocumento) => {
+    const files = Array.from(event.target.files); // Convertir FileList a array
+    setFormData((prevData) => ({
+      ...prevData,
       documentos: {
-        ...formData.documentos,
-        [docType]: e.target.files[0],
+        ...prevData.documentos,
+        [tipoDocumento]: [...prevData.documentos[tipoDocumento], ...files], // Agregar nuevos archivos
       },
-    });
+    }));
   };
 
   const handleNext = () => {
@@ -135,12 +143,12 @@ const handleBlur = (e) => {
         <form onSubmit={handleSubmit} className="prestamos-form-container">
           
           {/* 📌 SECCIÓN 1: DATOS DEL FIRMANTE */}
-{step === 1 && (
-  <fieldset className="prestamos-form-section">
-    <legend>Datos Personales</legend>
-    <div className="prestamos-form-grid">
-      <input type="text" name="nombres" placeholder="Nombres y Apellidos" onChange={handleChange} required />
-      <input type="text" name="documento" placeholder="N° de Documento" onChange={handleChange} required />
+      {step === 1 && (
+    <fieldset className="prestamos-form-section">
+     <legend>Datos Personales</legend>
+      <div className="prestamos-form-grid">
+        <input type="text" name="nombres" placeholder="Nombres y Apellidos" onChange={handleChange} required />
+        <input type="text" name="documento" placeholder="N° de Documento" onChange={handleChange} required />
 
       {/* 🔹 Campo de fecha con descripción */}
       <div className="label-input-container">
@@ -207,17 +215,18 @@ const handleBlur = (e) => {
       <input type="text" name="plazo" placeholder="Plazo" onBlur={handleBlur} onChange={handleChange} required/>
       <input type="text" name="destino" placeholder="Destino" onChange={handleChange} />
 
-      <div className="bank-container">
-                  <label htmlFor="bancos">Seleccionar Banco:</label>
-                  <select name="bancos" id="bancos" onChange={handleBankSelection} className="bank-select">
-                    <option value="">Seleccione un banco</option>
-                    {bancosDisponibles.map((banco) => (
-                      <option key={banco.nombre} value={banco.nombre}>
-                        {banco.nombre} - {banco.tasa}%
-                      </option>
-                    ))}
-                  </select>
-                </div>
+      {/* 📌 Selección de banco */}
+      <div className="bank-wrapper">
+        <label htmlFor="bancos" className="bank-label">Seleccionar Banco:</label>
+        <select name="bancoSeleccionado" id="bancos" onChange={handleBankSelection} className="bank-select">
+          <option value="">Seleccione un banco</option>
+          {bancos.map((banco) => (
+            <option key={banco.entidad} value={banco.entidad}>
+              {banco.entidad} - {banco.tasaInteres}%
+            </option>
+          ))}
+        </select>
+        </div>    
 
                 <div className="calculator-container">
                   <button type="button" className="calculate-button" onClick={calcularCuota}>
@@ -232,29 +241,38 @@ const handleBlur = (e) => {
       <legend>Adjuntar Documentos</legend>
       <p className="prestamos-instrucciones">📄 Adjunta los documentos requeridos.</p>
       <div className="prestamos-documentos-grid">
-        <label>
-          Copia Cédula de Identidad:
-          <input type="file" onChange={(e) => handleFileUpload(e, "cedula")} className="prestamos-file-upload" />
-          {formData.documentos.cedula && <span className="prestamos-file-name">✅ {formData.documentos.cedula.name}</span>}
-        </label>
-
-        <label>
-          Comprobante de RUC:
-          <input type="file" onChange={(e) => handleFileUpload(e, "ruc")} className="prestamos-file-upload" />
-          {formData.documentos.ruc && <span className="prestamos-file-name">✅ {formData.documentos.ruc.name}</span>}
-        </label>
-
-        <label>
-          Últimos 12 Formularios 120 IVA:
-          <input type="file" onChange={(e) => handleFileUpload(e, "iva")} className="prestamos-file-upload" />
-          {formData.documentos.iva && <span className="prestamos-file-name">✅ {formData.documentos.iva.name}</span>}
-        </label>
-
-        <label>
-          Liquidación de Salario (últimos 6 meses):
-          <input type="file" onChange={(e) => handleFileUpload(e, "salario")} className="prestamos-file-upload" />
-          {formData.documentos.salario && <span className="prestamos-file-name">✅ {formData.documentos.salario.name}</span>}
-        </label>
+        {[
+          { key: "cedula", label: "Cédula de Identidad" },
+          { key: "factura", label: "Factura Servicios Públicos" },
+          { key: "salario", label: "Liquidación de Salario (últimos 6 meses)" },
+          { key: "certificado", label: "Certificado de Trabajo o Comprobante de IPS" },
+          { key: "cct", label: "Certificado de Cumplimiento Tributario (CCT) al día" },
+          { key: "ruc", label: "Comprobante de RUC" },
+          { key: "iva", label: "Últimos 12 Formularios 120 IVA" },
+          { key: "cartaoferta", label: "Carta Oferta del Inmueble" },
+          { key: "tazacion", label: "Tasación del Inmueble" },
+          { key: "extracto", label: "Extracto de Cuenta Bancaria" },
+          { key: "cedulacodeudor", label: "Cédula de Identidad Codeudor" },
+        ].map(({ key, label }) => (
+          <label key={key}>
+            {label}:
+            <input
+              type="file"
+              multiple
+              onChange={(e) => handleFileUpload(e, key)}
+              className="prestamos-file-upload"
+            />
+            {formData.documentos[key].length > 0 && (
+              <ul className="prestamos-file-list">
+                {formData.documentos[key].map((file, index) => (
+                  <li key={index} className="prestamos-file-name">
+                    ✅ {file.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </label>
+        ))}
       </div>
     </fieldset>
 

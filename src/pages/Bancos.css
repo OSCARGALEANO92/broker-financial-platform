@@ -34,6 +34,30 @@
     margin-bottom: 15px;
 }
 
+.editar-btn-container {
+    display: flex;
+    justify-content: flex-end; /* Mueve el botón hacia la derecha */
+    margin-bottom: 10px; /* Espacio debajo del botón */
+  }
+  
+  .editar-btn {
+    background-color: #f8f9fa;
+    color: black;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .editar-btn:hover {
+    background-color: #e2e6ea;
+  }
+  
+
 /* 📌 Contenedor de la tabla */
 .bancos-table-container {
     width: 100%; /* ✅ Se adapta al contenedor */

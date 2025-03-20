@@ -166,7 +166,7 @@
     padding-left: 10px;
     position: relative;
     bottom: 10px;
-    left: 1rem;
+    left: -6rem;
 }
 
 /* 📌 Botones de paginación */
@@ -211,6 +211,15 @@
     padding: 8px;
     border-radius: 5px;
   }
+
+  /* 📌 Nuevo estado: Verificando */
+.estado-verificando {
+  background-color: #007bff;  /* 🔹 Azul */
+  color: rgb(2, 2, 2);
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
   
   .accion-select, .mensaje-textarea {
     width: 100%;

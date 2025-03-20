@@ -3,6 +3,9 @@ import "./Mensajes.css";
 
 const Mensajes = () => {
   const [filaExpandida, setFilaExpandida] = useState(null);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const mensajesPorPagina = 5;
+
 
   // Lista de mensajes simulada
   const mensajes = [
@@ -14,15 +17,26 @@ const Mensajes = () => {
       fechaCarga: "12-Mar-2025",
       estado: "Aprobado",
       mensaje: "Solicitud procesada con éxito.",
-      detalles: {
-        fechaNacimiento: "01-Ene-1990",
-        estadoCivil: "Soltero",
-        celular: "0981 123456",
-        correo: "juanperez@email.com",
-        direccion: "Calle 123, Asunción",
-        empresa: "Empresa XYZ",
-        ingresos: "₲15.000.000",
-      },
+      historialMensajes: [
+        {
+          fechaHora: "10-Mar-2025 10:00 AM",
+          usuario: "Broker1",
+          mensaje: "Solicitud enviada al banco",
+          estado: "Pendiente",
+        },
+        {
+          fechaHora: "11-Mar-2025 03:30 PM",
+          usuario: "Banco Nacional",
+          mensaje: "Verificando documentos",
+          estado: "Verificando",
+        },
+        {
+          fechaHora: "12-Mar-2025 02:00 PM",
+          usuario: "Banco Nacional",
+          mensaje: "Solicitud procesada con éxito.",
+          estado: "Aprobado",
+        },
+      ],
     },
     {
       documento: "87654321",
@@ -32,36 +46,30 @@ const Mensajes = () => {
       fechaCarga: "13-Mar-2025",
       estado: "Pendiente",
       mensaje: "Falta verificación de documentos.",
-      detalles: {
-        fechaNacimiento: "05-Jul-1985",
-        estadoCivil: "Casada",
-        celular: "0982 654321",
-        correo: "mariagomez@email.com",
-        direccion: "Avenida Principal 456, Ciudad del Este",
-        empresa: "Negocios ABC",
-        ingresos: "₲7.000.000",
-      },
-    },
-    {
-      documento: "2156874",
-      nombre: "Juan Gimenez",
-      banco: "Banco Itau",
-      monto: "₲150.000.000",
-      fechaCarga: "13-Mar-2025",
-      estado: "Pendiente",
-      mensaje: "Falta verificación de documentos.",
-      detalles: {
-        fechaNacimiento: "22-May-1980",
-        estadoCivil: "Soltero",
-        celular: "0983 987654",
-        correo: "juangimenez@email.com",
-        direccion: "Calle 789, Ciudad del Este",
-        empresa: "Empresa DEF",
-        ingresos: "₲10.000.000",
-      },
+      historialMensajes: [
+        {
+          fechaHora: "11-Mar-2025 09:15 AM",
+          usuario: "Broker2",
+          mensaje: "Solicitud enviada al banco",
+          estado: "Pendiente",
+        },
+      ],
     },
   ];
 
+  // 🔹 Funciones de Paginación
+  const totalPaginas = Math.ceil(mensajes.length / mensajesPorPagina);
+  const indiceInicial = (paginaActual - 1) * mensajesPorPagina;
+  const indiceFinal = indiceInicial + mensajesPorPagina;
+  const mensajesPaginados = mensajes.slice(indiceInicial, indiceFinal);
+
+  const paginaAnterior = () => {
+    if (paginaActual > 1) setPaginaActual(paginaActual - 1);
+  };
+
+  const paginaSiguiente = () => {
+    if (paginaActual < totalPaginas) setPaginaActual(paginaActual + 1);
+  };
   const toggleDetalles = (documento) => {
     setFilaExpandida((prev) => (prev === documento ? null : documento));
   };
@@ -84,7 +92,7 @@ const Mensajes = () => {
           </tr>
         </thead>
         <tbody>
-          {mensajes.map((mensaje, index) => (
+          {mensajesPaginados.map((mensaje, index) => (
             <React.Fragment key={index}>
               {/* 🔹 Fila principal */}
               <tr>
@@ -109,33 +117,39 @@ const Mensajes = () => {
                 </td>
               </tr>
 
-              {/* 🔹 Fila expandida con detalles */}
+              {/* 🔹 Fila expandida con tabla de log de mensajes */}
               {filaExpandida === mensaje.documento && (
                 <tr className="detalles-fila">
                   <td colSpan="8">
-                    <div className="detalles-container">
-                      <div className="ficha-cliente">
-                        <h2>Ficha del Cliente</h2>
-                        <p><strong>Documento:</strong> {mensaje.documento}</p>
-                        <p><strong>Nombre:</strong> {mensaje.nombre}</p>
-                        <p><strong>Fecha de Nacimiento:</strong> {mensaje.detalles.fechaNacimiento}</p>
-                        <p><strong>Estado Civil:</strong> {mensaje.detalles.estadoCivil}</p>
-                        <p><strong>Celular:</strong> {mensaje.detalles.celular}</p>
-                        <p><strong>Correo:</strong> {mensaje.detalles.correo}</p>
-                        <p><strong>Dirección:</strong> {mensaje.detalles.direccion}</p>
-                      </div>
-
-                      <div className="datos-adicionales">
-                        <h2>Datos Adicionales</h2>
-                        <p><strong>Banco:</strong> {mensaje.banco}</p>
-                        <p><strong>Monto del Préstamo:</strong> {mensaje.monto}</p>
-                        <p><strong>Fecha de Carga:</strong> {mensaje.fechaCarga}</p>
-                        <p><strong>Estado:</strong> {mensaje.estado}</p>
-                        <p><strong>Mensaje:</strong> {mensaje.mensaje}</p>
-                        <p><strong>Empresa:</strong> {mensaje.detalles.empresa}</p>
-                        <p><strong>Ingresos Mensuales:</strong> {mensaje.detalles.ingresos}</p>
-                      </div>
-                    </div>
+                      <h2>Historial de Mensajes</h2>
+                      <table className="log-mensajes-table">
+                        <thead>
+                          <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Usuario</th>
+                            <th>Mensaje</th>
+                            <th>Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {mensaje.historialMensajes && mensaje.historialMensajes.length > 0 ? (
+                          mensaje.historialMensajes.map((log, logIndex) => (
+                            <tr key={logIndex}>
+                              <td>{log.fechaHora}</td>
+                              <td>{log.usuario}</td>
+                              <td>{log.mensaje}</td>
+                              <td className={`estado-${log.estado.toLowerCase()}`}>
+                                {log.estado}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="4">No hay mensajes registrados.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </td>
                 </tr>
               )}
@@ -143,9 +157,22 @@ const Mensajes = () => {
           ))}
         </tbody>
       </table>
+    {/* 🔹 Paginación */}
+    <div className="mensajes-pagination">
+        <button onClick={paginaAnterior} disabled={paginaActual === 1} className="pagination-btn">
+          ← Anterior
+        </button>
+        <span className="pagina-texto">
+          Página {paginaActual} de {totalPaginas}
+        </span>
+        <button onClick={paginaSiguiente} disabled={paginaActual === totalPaginas} className="pagination-btn">
+          Siguiente →
+        </button>
+      </div>
     </div>
   );
 };
+
 
 export default Mensajes;
 

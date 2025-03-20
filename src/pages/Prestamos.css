@@ -132,16 +132,30 @@
   grid-column: auto; /* 🔹 Evita que se expanda al 100% */
 }
 
+.bank-wrapper {
+  display: flex;
+  align-items: center; /* Alinea verticalmente el label y el select */
+  gap: 10px; /* Espaciado entre el label y el select */
+  width: 100%;
+}
+
+.bank-label {
+  font-weight: bold;
+  white-space: nowrap; /* Evita que el texto se divida en dos líneas */
+}
+
 /* 📌 Ajuste especial para la selección de bancos */
-.prestamos-bank-select {
-  width: 200%; /* Ocupa todo el ancho */
-  height: 150px; /* 🔹 Aumenta la altura del cuadro */
-  font-size: 16px; /* 🔹 Hace que el texto sea más grande */
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
-  overflow-y: auto; /* 🔹 Agrega barra de desplazamiento si hay muchos bancos */
+.bank-select {
+  flex-grow: 1; /* Permite que el select ocupe el espacio disponible */
+  padding: 10px;
+  font-size: 16px;
+}
+
+.bank-container {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espacio entre el select y el botón */
+  width: 100%;
 }
 
 /* 📌 Ajuste para permitir desplazamiento en Step 4 */
@@ -256,7 +270,7 @@ label {
   font-size: 16px;
   padding: 10px 15px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s;
 }

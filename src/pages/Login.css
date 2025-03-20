@@ -1,20 +1,11 @@
-/* 🔹 Reset de estilos */
-body, html {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
-  font-family: Arial, sans-serif;
-}
-
 /* 🔹 Contenedor principal - Centrar el login */
 .login-container {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center; /* Centrar verticalmente */
+  width: 100vw;
   height: 100vh;
-  padding-left: 25%; /* Ajusta según necesidad */
+  position: relative;
 }
 
 /* 🔹 Tarjeta del login */
@@ -25,6 +16,10 @@ body, html {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
+  /* 🔹 Ajuste para mover un poco a la izquierda */
+  position: absolute;
+  left: 43%;  /* Ajusta según necesidad */
+  transform: translateX(-50%);
 }
 
 /* 🔹 Imagen del logo */
@@ -90,6 +85,7 @@ body, html {
     font-size: 1.3rem;
   }
 }
+
 
 
 
