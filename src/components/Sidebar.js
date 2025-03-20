@@ -92,7 +92,7 @@ const Sidebar = () => {
           <>
         {/* 🔹 Enlaces visibles para todos */}
         <SidebarLink to="/clientes" icon={<FaUsers />} text="Clientes" />
-            <SidebarLink to="/mensajes" icon={<FaEnvelope />} text="Mensajes" />
+        <SidebarLink to="/mensajes" icon={<FaEnvelope />} text="Mensajes" />
         </>
         )}
 
@@ -105,7 +105,7 @@ const Sidebar = () => {
         )}
 
         {/* 🔹 Espaciador dinámico para empujar "Ajustes" al final */}
-        <div style={{ flexGrow: 1 }}></div>
+        <div style={{ flexGrow: 0.9 }}></div>
 
         {/* 🔹 Ajustes al final */}
         <SidebarLink to="/ajustes" icon={<FaCogs />} text="Ajustes" />
