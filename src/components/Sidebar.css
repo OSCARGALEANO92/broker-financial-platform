@@ -1,39 +1,58 @@
-/* 📌 Asegurar que el botón de ajustes esté abajo */
+/* 📌 Estilos generales de la barra lateral */
 .sidebar {
-    display: flex;
-    width: 14rem; /* Mantiene el tamaño fijo de la barra lateral */
-    padding-top: 20px;
-    min-height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    background-color: #111; /* Color oscuro para la barra lateral */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Ajusta el contenido */
-  }
-  
-  /* 📌 Botón de ajustes */
-  .sidebar-footer {
-    display: flex;
-    justify-content: center;
-    padding: 15px;
-  }
-  
-  .settings-button {
-    background-color: #444;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    width: 90%;
-    text-align: center;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .settings-button:hover {
-    background-color: #555;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  width: 14rem; /* Mantiene el tamaño fijo de la barra lateral */
+  height: 100vh; /* Ajusta la altura total */
+  min-height: 100vh; /* Previene recorte */
+  justify-content: space-between; /* Distribuye los elementos */
+  padding: 20px 0; /* Espacio superior e inferior */
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #111; /* Color oscuro para la barra lateral */
+  overflow-y: auto; /* Permite desplazamiento si es necesario */
+}
+
+/* 📌 Contenedor de los elementos del menú */
+.sidebar-menu {
+  flex-grow: 1; /* Permite que crezca para empujar "Ajustes" */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre elementos */
+  padding-bottom: 50px; /* Asegura espacio suficiente para el botón de ajustes */
+}
+
+/* 📌 Asegurar que "Ajustes" NO quede tan abajo */
+.ajustes {
+  margin-top: 20px; /* Evita que se oculte demasiado abajo */
+  padding-bottom: 20px; /* Más espacio extra */
+  position: relative;
+}
+
+/* 📌 Botón de ajustes */
+.sidebar-footer {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  position: absolute;
+  bottom: 20px; /* Levanta el botón para que no se corte */
+  width: 100%;
+}
+
+.settings-button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  width: 90%;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.settings-button:hover {
+  background-color: #555;
+}
