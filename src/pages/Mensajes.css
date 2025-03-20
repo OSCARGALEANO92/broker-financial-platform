@@ -1,129 +1,133 @@
-/* 📌 Asegurar que el body no tenga márgenes y ocupe todo el espacio */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    overflow-x: hidden;
-}
+
+
 /* 📌 Contenedor Principal */
 .mensajes-container {
-    width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
-    height: 100vh; /* 🔹 Ocupar toda la altura de la pantalla */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    overflow: auto;
-    background-color: #f8f9fa;
-  }
-  
-  /* 📌 Título */
-  .mensajes-title {
-    font-size: 30px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  /* 📌 Tabla de Mensajes */
-  .mensajes-table {
-    table-layout: fixed;
-    width: 95%;
-    max-width: 1200px; /* 🔹 Máximo ancho */
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
-  }
-
-  .clientes-table tr {
-    height: 60px; /* Ajusta según el tamaño de tu diseño */
+  width: calc(100vw - 250px);  /* 🔹 Ajuste con sidebar */
+  min-height: 100vh; /* 🔹 Ocupar toda la pantalla */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  overflow: auto;
+  background-color: #f8f9fa;
+  margin-left: 20px; /* ✅ Evita que la tabla se esconda detrás del sidebar */
 }
-  
-  .mensajes-table th, .mensajes-table td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; /* Evita que el texto se desborde */
-  }
-  
-  .mensajes-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-  }
-  
-  /* 📌 Botón de Ver Más */
-  .mensajes-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .mensajes-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* 📌 Contenedor de los Detalles */
-  .detalles-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    gap: 20px;
-  }
-  
- /* 📌 Contenedor principal de las fichas */
+
+/* 📌 Título */
+.mensajes-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 60px; /* 🔹 Mayor separación del navbar */
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+/* 📌 Tabla de Mensajes */
+.mensajes-table-container {
+  width: 100%;
+  max-width: 1200px; /* 🔹 Ajuste del tamaño máximo */
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  margin-top: 10px; /* 🔹 Espacio extra */
+}
+
+/* 📌 Estilos de la tabla */
+.mensajes-table-container table {
+  width: 100%;
+  border-collapse: collapse; /* ✅ Fusionar bordes */
+  background: none;
+}
+
+.mensajes-table th, .mensajes-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* ✅ Evita que el texto se desborde */
+}
+
+.mensajes-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  text-align: center; /* ✅ Centrando títulos */
+}
+
+/* 📌 Botón de Ver Más */
+.mensajes-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px; /* 🔹 Diseño más moderno */
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.mensajes-button:hover {
+  background-color: #0056b3;
+}
+
+/* 📌 Contenedor de los Detalles */
+.detalles-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+/* 📌 Contenedor principal de las fichas */
 .fichas-container {
-    display: flex;
-    justify-content: space-between; /* 🔹 Espaciado uniforme */
-    align-items: flex-start;
-    width: 95%;
-    max-width: 1200px;
-    margin: 10px auto;
-    gap: 10px; /* 🔹 Espacio entre fichas */
+  display: flex;
+  justify-content: space-between; /* 🔹 Espaciado uniforme */
+  align-items: flex-start;
+  width: 95%;
+  max-width: 1200px;
+  margin: 10px auto;
+  gap: 10px; /* 🔹 Espacio entre fichas */
 }
 
 /* 📌 Estilos para Ficha del Cliente y Datos Adicionales */
 .ficha-cliente, .datos-adicionales {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;  /* 🔹 Ajustar al ancho del contenedor */
-    background: white;
-    padding: 20px; /* 🔹 Reducir padding para evitar espacios grandes */
-    border-radius: 20px; /* 🔹 Menos curvatura para un diseño más moderno */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* 🔹 Ajuste total */
+  background: white;
+  padding: 20px;
+  border-radius: 10px; /* 🔹 Menos curvatura */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 📌 Asegurar que los títulos tengan el mismo ancho que la tabla */
 .ficha-cliente h2, .datos-adicionales h2 {
-    text-align: center; /* 🔹 Centrar los títulos */
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 10px;
+  text-align: center; /* ✅ Centrar los títulos */
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 /* 📌 Asegurar que los textos internos ocupen el 100% */
 .ficha-cliente div, .datos-adicionales div {
-    width: 50%;
+  width: 100%;
 }
 
-  
-  /* 📌 Responsivo */
-  @media (max-width: 768px) {
-    .detalles-container {
+/* 📌 Responsivo */
+@media (max-width: 768px) {
+  .detalles-container {
       flex-direction: column;
-    }
   }
+
+  .mensajes-table-container {
+      overflow-x: auto; /* ✅ Scroll horizontal en pantallas pequeñas */
+  }
+}
+
   

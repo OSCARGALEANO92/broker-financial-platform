@@ -6,7 +6,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px;
+    padding: 30px;
+    margin-top: 20px; /* ✅ Baja el título para que no se superponga con el navbar */
 }
 
 /* 📌 Título del Banco */
@@ -14,7 +15,7 @@
     font-size: 2.5rem;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     color: #222;
     width: 100%;
 }
@@ -37,16 +38,17 @@
 .DetallesBanco-resumen {
     display: flex;
     justify-content: flex-start;
-    gap: 70px;
-    margin-bottom: 10px;
+    flex-wrap: wrap; /* ✅ Se acomoda en dispositivos pequeños */
+    gap: 40px;
+    margin-bottom: 20px;
 }
 
 .resumen-card {
-    width: 200px;
+    width: 220px;
     padding: 15px;
     border-radius: 8px;
     color: rgb(0, 0, 0);
-    font-size: 18px;
+    font-size: 20px;
     text-align: center;
     font-weight: bold;
 }
@@ -65,29 +67,46 @@
 
 /* 📌 Contenedor de la tabla */
 .DetallesBanco-table-container {
-    width: 90%;
-    max-width: 1000px;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* ✅ Se ajusta automáticamente */
+    max-width: 1200px;
     background-color: white;
     border-radius: 10px;
-    padding: 15px;
+    padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 10px;
+    margin-top: 20px;
+    overflow-x: auto; /* ✅ Permite desplazamiento en pantallas pequeñas */
 }
 
 /* 📌 Estilos de la tabla */
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto; /* ✅ Se ajusta automáticamente */
 }
 
-th, td {
-    padding: 10px;
+/* 📌 Encabezados de la tabla (Centrados) */
+th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 12px;
+    text-align: center; /* ✅ CENTRADO */
+    border-bottom: 2px solid #ddd;
+    vertical-align: middle; /* ✅ Centrado verticalmente */
+}
+
+/* 📌 Celdas de la tabla */
+td {
+    padding: 12px;
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
 
-th {
-    background-color: #f8f9fa;
+/* 📌 Resaltar fila al pasar el cursor */
+tr:hover {
+    background-color: #f1f1f1;
 }
 
 /* 📌 Estados */
@@ -125,6 +144,37 @@ th {
 
 .DetallesBanco-button:hover {
     background-color: #0056b3;
+}
+
+/* 📌 RESPONSIVIDAD: Ajustar tabla en pantallas pequeñas */
+@media (max-width: 1024px) {
+    .DetallesBanco-container {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .DetallesBanco-title {
+        font-size: 28px;
+        margin-top: 100px; /* ✅ Baja más el título si el navbar lo cubre */
+    }
+
+    .DetallesBanco-table-container {
+        overflow-x: auto;
+        display: block;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    .DetallesBanco-button {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
 }
 
 

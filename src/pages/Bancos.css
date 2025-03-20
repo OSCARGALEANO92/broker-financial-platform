@@ -1,15 +1,3 @@
-/* 📌 Asegurar que el body ocupe toda la pantalla */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    overflow: hidden;
-}
-
 /* 📌 Contenedor principal */
 .bancos-container {
     width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
@@ -34,7 +22,7 @@ body {
     color: #333;
     margin-top: 50px; /* ✅ Pegado más a la parte superior */
     margin-bottom: 30px;
-    text-align: flex;
+    text-align: center;
     width: 100%;
 }
 
@@ -48,12 +36,9 @@ body {
 
 /* 📌 Contenedor de la tabla */
 .bancos-table-container {
-    width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
-    max-width: 1200px; /* ✅ Ajuste de tamaño */
-    background: none;
-    border-radius: 10px;
-    padding: 0px;
-    box-shadow: none
+    width: 100%; /* ✅ Se adapta al contenedor */
+    border-collapse: collapse; /* ✅ Fusiona los bordes de las celdas */
+    table-layout: auto; /* ✅ Ajusta dinámicamente el ancho de las columnas */
 }
 
 /* 📌 Estilo de la tabla */

@@ -2,7 +2,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 14rem; /* Mantiene el tamaño fijo de la barra lateral */
+  width: 250px; /* Mantiene el tamaño fijo de la barra lateral */
   height: 100vh; /* Ajusta la altura total */
   min-height: 100vh; /* Previene recorte */
   justify-content: space-between; /* Distribuye los elementos */
@@ -12,7 +12,13 @@
   top: 0;
   bottom: 0;
   background-color: #111; /* Color oscuro para la barra lateral */
-  overflow-y: auto; /* Permite desplazamiento si es necesario */
+  overflow: hidden; /* Evita scroll dentro de la sidebar */
+  padding-top: 20px;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 0; /* Hace la barra de desplazamiento invisible */
+  height: 0; /* Oculta la barra de desplazamiento horizontal */
 }
 
 /* 📌 Contenedor de los elementos del menú */
@@ -22,6 +28,10 @@
   flex-direction: column;
   gap: 10px; /* Espacio entre elementos */
   padding-bottom: 50px; /* Asegura espacio suficiente para el botón de ajustes */
+  overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
+  overflow-x: hidden; /* Evita desplazamiento horizontal */
+  scrollbar-width: none; /* Para Firefox */
+  -ms-overflow-style: none; /* Para Edge y IE */
 }
 
 /* 📌 Asegurar que "Ajustes" NO quede tan abajo */

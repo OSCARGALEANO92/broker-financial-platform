@@ -1,14 +1,3 @@
-/* 📌 Asegurar que el body tenga barra de desplazamiento */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: auto; /* ✅ Permite desplazamiento vertical */
-}
 
 /* 📌 Contenedor Principal */
 .clientes-container {
@@ -52,7 +41,10 @@ body {
   font-size: 40px; /* 🔹 Reducido */
   font-weight: bold;
   color: #333;
+  margin-top: 40px; /* 🔹 Aumenta el espacio superior */
   margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
 }
 
 /* 📌 Ajuste de la tabla */
@@ -174,7 +166,7 @@ body {
     padding-left: 10px;
     position: relative;
     bottom: 10px;
-    left: -34rem;
+    left: 1rem;
 }
 
 /* 📌 Botones de paginación */

@@ -20,6 +20,7 @@
   width: 100%;
   display: flex;
   justify-content: center; /* ✅ Asegura que se mantenga en el centro */
+  align-items: center; /* ✅ Centrar verticalmente */
   margin-bottom: 10px; 
 }
 
@@ -39,29 +40,45 @@
 
 /* 📌 Ajustar el espacio entre el título y la tabla */
 .ajustes-table-container {
-  margin-top: 10px;  /* 🔹 Reducir espacio entre título y tabla */
+  margin-top: 1px;  /* 🔹 Reducir espacio entre título y tabla */
 }
 
 /* 📌 Asegurar que los inputs ocupen todo el espacio disponible */
 .ajustes-input-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .ajustes-input-group label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
-  margin-bottom: -5px;
+  margin-bottom: 5px;
+  text-align: left; /* ✅ Mantiene alineado a la izquierda */
 }
 
 .ajustes-input-group input {
-  padding: 3px;
+  padding: 6px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
   width: 100%;
 }
+
+/* 📌 Botón "Mostrar contraseña" */
+.mostrar-contrasena {
+  width: 100%;
+  padding: 10px;
+  background: #17da44;
+  color: rgb(245, 239, 239);
+  border: 1px solid #f8f4f4;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 5px;  /* 🔹 Espacio entre el input y el botón */
+  margin-bottom: 4px; /* ✅ Mayor separación con "Guardar Cambios" */
+}
+
 
 /* 📌 Botón de Guardar Cambios */
 .ajustes-button {

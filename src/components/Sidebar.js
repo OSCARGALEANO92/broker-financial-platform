@@ -20,16 +20,7 @@ const Sidebar = () => {
   const SidebarLink = ({ to, icon, text }) => (
     <Link
       to={to}
-      style={{
-        textDecoration: "none",
-        color: "white",
-        display: "flex",
-        alignItems: "center",
-        gap: "10px",
-        padding: "10px 15px",
-        borderRadius: "5px",
-        transition: "background 0.3s ease-in-out",
-      }}
+      className="sidebar-link"
     >
       {icon} {text}
     </Link>
@@ -69,40 +60,23 @@ const Sidebar = () => {
       </Box>
 
       {/* 🔹 Barra lateral */}
-      <Box
-        sx={{
-          width: "250px",
-          height: "100vh",
-          backgroundColor: "#000", // 🔹 Fondo negro
-          padding: "40px",
-          position: "fixed",
-          left: 0,
-          top: "60px", // No se sobrepone al navbar
-          display: "flex",
-          flexDirection: "column",
-          gap: "1px",
-          borderRight: "2px solid #333",
-        }}
-      >
-        {/* 🔹 Dashboard (Visible para todos) */}
-        <SidebarLink to="/dashboard" icon={<FaTachometerAlt />} text="Dashboard" />
-
-        {/* ✅ Mostrar Clientes, Mensajes y Ajustes SOLO si es "banco" */}
-        {(userRole === "admin" || userRole === "banco" || userRole === "broker") && (
-          <>
-        {/* 🔹 Enlaces visibles para todos */}
-        <SidebarLink to="/clientes" icon={<FaUsers />} text="Clientes" />
-        <SidebarLink to="/mensajes" icon={<FaEnvelope />} text="Mensajes" />
-        </>
-        )}
-
-         {/* ✅ Mostrar Préstamos y Bancos SOLO si es "admin" */}
-         {(userRole === "admin" || userRole === "broker") && (
-          <>
-            <SidebarLink to="/prestamos" icon={<FaHandHoldingUsd />} text="Préstamos" />
+      <Box className="sidebar">
+        <div className="sidebar-menu">
+          {/* ✅ Orden fijo */}
+          <SidebarLink to="/dashboard" icon={<FaTachometerAlt />} text="Dashboard" />
+          {(userRole === "admin" || userRole === "broker") && (
+            <SidebarLink to="/Prestamos" icon={<FaHandHoldingUsd />} text="Solicitudes" />
+          )}
+          {(userRole === "admin" || userRole === "banco" || userRole === "broker") && (
+            <SidebarLink to="/clientes" icon={<FaUsers />} text="Clientes" />
+          )}
+          {(userRole === "admin" || userRole === "banco" || userRole === "broker") && (
+            <SidebarLink to="/mensajes" icon={<FaEnvelope />} text="Mensajes" />
+          )}
+          {(userRole === "admin" || userRole === "broker") && (
             <SidebarLink to="/bancos" icon={<FaUniversity />} text="Bancos" />
-          </>
-        )}
+          )}
+        </div>
 
         {/* 🔹 Espaciador dinámico para empujar "Ajustes" al final */}
         <div style={{ flexGrow: 0.9 }}></div>

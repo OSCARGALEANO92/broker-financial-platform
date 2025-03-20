@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -19,10 +19,23 @@ const Clientes = () => {
   const [selectedEstado, setSelectedEstado] = useState("");
   const [selectedBanco, setSelectedBanco] = useState("");
   const userRole = localStorage.getItem("userRole");
-  const [mensajes, setMensajes] = useState({});
+  const [activeMenu, setActiveMenu] = useState(null);
   const [estados, setEstados] = useState({});
+  const [mensajes, setMensajes] = useState({});
   const [paginaActual, setPaginaActual] = useState(1);
   const clientesPorPagina = 6;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".acciones-menu") && !event.target.closest(".acciones-btn")) {
+        setActiveMenu(null);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
  // Filtro de clientes
  const filteredClientes = clientes.filter((cliente) => {
@@ -83,6 +96,7 @@ const Clientes = () => {
       cliente.id === id ? { ...cliente, estado: nuevoEstado } : cliente
     )
   );
+  setActiveMenu(null); // Cerrar el menú
   alert(`✅ Cliente ${id}: Estado actualizado a "${nuevoEstado}" con mensaje: "${mensaje}"`);
 };
 
@@ -188,26 +202,33 @@ const Clientes = () => {
               </td>
             {/* **✅ Mostrar el botón de Acciones solo si el usuario es "banco"** */}
             {userRole === "banco" && (
-                <td>
-                  <select 
-                  className="accion-select"
-                  value={estados[cliente.id] || cliente.estado}
-                  onChange={(e) => handleEstadoChange(cliente.id, e.target.value)}
-                  >
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Aceptado">Aceptar</option>
-                    <option value="Rechazado">Rechazar</option>
-                  </select>
-                  <textarea 
+            <td className="acciones-container">
+            {/* Botón de Acciones */}
+            <button 
+              className="acciones-btn" 
+              onClick={() => setActiveMenu(activeMenu === cliente.id ? null : cliente.id)}
+            >
+              📋 Acciones
+            </button>
+
+            {/* Menú desplegable */}
+            {activeMenu === cliente.id && (
+              <div className="acciones-menu">
+                <select value={estados[cliente.id] || cliente.estado} onChange={(e) => handleEstadoChange(cliente.id, e.target.value)} className="accion-select">
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Aprobado">Aprobado</option>
+                  <option value="Rechazado">Rechazado</option>
+                </select>
+                <textarea 
                   className="mensaje-textarea" 
-                  placeholder="Escribe un mensaje..."
+                  placeholder="Mensaje..."
                   value={mensajes[cliente.id] || ""}
-                    onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}
-                    ></textarea>
-                  <button className="enviar-mensaje" onClick={() => handleGuardar(cliente.id)}
-                    >Enviar
-                    </button>
-                </td>
+                  onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}
+                ></textarea>
+                <button className="enviar-mensaje" onClick={() => handleGuardar(cliente.id)}>Enviar</button>
+              </div>
+            )}
+          </td>  
               )}
             </tr>
           ))}

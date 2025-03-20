@@ -7,7 +7,8 @@
   min-height: 100vh;
   width: 100vw;
   padding-top: 60px; /* Evita que el navbar cubra contenido */
-  justify-content: flex-start; /* Centra el contenido en la pantalla */
+  justify-content: center; /* Centra el contenido en la pantalla */
+  
 }
 
 /* 📌 Ajuste del contenido principal para que no cubra la barra lateral */
@@ -334,5 +335,18 @@
   height: auto;
   display: block;
   margin: 0 auto; /* Centrar la imagen */
+}
+
+/* 📌 Responsividad */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-content {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 

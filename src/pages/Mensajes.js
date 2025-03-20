@@ -70,7 +70,7 @@ const Mensajes = () => {
     <div className="mensajes-container">
       <h1 className="mensajes-title">Mensajes de Solicitudes</h1>
 
-      <table className="mensajes-table">
+      <table className="mensajes-table-container">
         <thead>
           <tr>
             <th>Documento</th>

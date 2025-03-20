@@ -2,7 +2,7 @@
     width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
     height: 100vh; /* 🔹 Ocupar toda la altura */
     font-size: 20px;
-    padding: 20px;
+    padding: 50px;
     background-color: #f8f9fa;
     min-height: 100vh;
     text-align: center;
@@ -10,26 +10,28 @@
 
   /* 📌 Ajuste del título */
 .ClienteDetalle-title {
-  font-size: 30px;
+  font-size: 40px;
   font-weight: bold;
   color: #333;
-  margin-top: 50px; /* ✅ Pegado más a la parte superior */
+  margin-top: 60px; /* ✅ Pegado más a la parte superior */
   margin-bottom: 30px;
-  text-align: flex;
+  text-align: center;
   width: 100%;
 }
   
   h1 {
-    font-size: 10px;
+    font-size: 42px;
     font-weight: bold;
+    text-align: center;
     margin-bottom: 20px;
+    color: #333;
   }
   
   .detalle-content {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin-top: 20px;
+    margin-top: 40px;
   }
   
   /* 📌 Estilos para Ficha del Cliente y Datos Adicionales */
