@@ -1,29 +1,20 @@
 
 /* 📌 Contenedor principal de la solicitud de préstamo */
 .prestamos-container {
+  width: calc(100vw - 250px); /* 🔹 Restamos el ancho del sidebar */
   flex: 1;
-  width: calc(100vw - 1px);  /* 🔹 Restamos el ancho del sidebar */
-  margin-left: 0; /* 🔹 Asegurar alineación con el dashboard */
-  margin: 0;
-  background: none; /* 🔹 Elimina el fondo */
-  box-shadow: none; /* 🔹 Quita el sombreado */
-  border: none; /* 🔹 Elimina el borde */
-  display: center;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
-  padding: 20px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  padding: 30px;
+  overflow: auto; /* ✅ Permite desplazamiento si hay muchas filas */
+  background: none; /* ❌ Elimina el fondo */
+  box-shadow: none; /* ❌ Elimina la sombra */
+  border: none; /* ❌ Elimina el borde */
 }
 
-/* 📌 Asegurar espacio en la parte superior */
-.prestamos-content {
-  padding-top: 20px;
-  width: 100%;
-  max-width: 90%;
-}
 
 /* 📌 Título principal */
 .prestamos-title {
@@ -55,8 +46,8 @@
 /* 📌 Formulario en formato horizontal */
 .prestamos-form-container {
   margin-bottom: 1px;
-  padding-bottom: 5px; /* Reduce el espacio interno si es necesario */
-  margin-top: 5px;
+  padding-bottom: 10px; /* Reduce el espacio interno si es necesario */
+  margin-top: 30px;
   padding-top: 0px;
   width: 90%;
   max-width: 1300px; /* 🔹 Evita que se achique demasiado */
@@ -64,9 +55,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 90px;
+  padding: 98px;
   overflow-y: auto; /* 🔹 Activa el scroll */
-  max-height: 80vh; /* 🔹 Limita la altura del contenedor */
+
 }
 
 /* 📌 Secciones del formulario */
@@ -104,7 +95,7 @@
 
 /* 📌 Ajuste de los inputs para que ocupen toda la fila */
 .prestamos-form-grid {
-  margin-bottom: 80px !important;  /* 🔹 Reduce espacio entre los inputs */
+  margin-bottom: 100px !important;  /* 🔹 Reduce espacio entre los inputs */
   padding: 8px;                  /* 🔹 Ajusta el padding interno */
   display: flex;
   flex-wrap: wrap;
@@ -297,60 +288,65 @@ label {
 }
 
 
-
-/* 📌 Diseño Responsivo */
+  /* 📌 Ajustes en dispositivos pequeños */
 @media (max-width: 1024px) {
   .prestamos-container {
       width: 100%;
-      margin-left: 14rem;
+      margin-left: 0;
       padding: 15px;
   }
 
-  .prestamos-form-grid,
-  .prestamos-documentos-grid {
-      flex-direction: column;
-  }
-}
-
-@media (max-width: 768px) {
-  .prestamos-container {
-      width: calc(100% - 12rem);
-      margin-left: 12rem;
-      padding: 10px;
-  }
-
-  .prestamos-form-grid,
-  .prestamos-documentos-grid {
-      flex-direction: column;
-  }
-
   .prestamos-title {
-      font-size: 1.8rem;
+      font-size: 28px;
+      margin-top: 100px; /* ✅ Baja más el título si el navbar lo cubre */
   }
-}
 
-@media (max-width: 480px) {
-  .prestamos-container {
-      width: calc(100% - 10rem);
-      margin-left: 10rem;
+  .prestamos-table-container {
+      overflow-x: auto;
+      display: block;
+  }
+
+  table {
+      font-size: 14px;
+  }
+
+  th, td {
       padding: 8px;
   }
 
-  .prestamos-title {
-      font-size: 1.5rem;
+
+/* 📌 Ajustes para móviles */
+@media (max-width: 768px) {
+  .prestamos-container {
+      width: 100vw;
+      padding: 15px;
   }
+
+  .prestamos-title {
+      font-size: 24px;
+      margin-top: 80px; /* ✅ Ajuste para evitar superposición */
+  }
+
+  .prestamos-form-section {
+    font-size: 16px; /* 🔹 Tamaño más pequeño en móviles */
+    max-width: 90%;
+    margin-top: 10px; /* 🔹 Baja un poco la descripción */
 }
 
+  .prestamos-form-container {
+      padding: 15px;
+  }
 
+  .prestamos-form-grid {
+    margin-top: 10px; /* ✅ Ajuste para evitar superposición */
+      flex-direction: column;
+  }
 
-
-
-
-
-
-
-
-
-
-
+  th, td {
+      font-size: 12px;
+      padding: 6px;
+      white-space: nowrap; /* ✅ Evita que el texto se desborde */
+  }
+}
+}
 

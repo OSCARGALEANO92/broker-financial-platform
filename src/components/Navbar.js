@@ -1,46 +1,42 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { Button } from "react-bootstrap";
-import logo from "../assets/HB-Logo.png.png"; // Asegúrate de que la ruta y nombre del archivo sean correctos
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa";
+import logo from "../assets/HB-Logo_mejorado.png.png"; // Asegúrate de que la ruta sea correcta
+import "./Navbar.css";
 
 const Navbar = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
+  const location = useLocation(); // ✅ Obtiene la ruta actual
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    setIsAuthenticated(false);
+    localStorage.removeItem("userRole");
+    if (setIsAuthenticated) {
+      setIsAuthenticated(false);
+    }
+    navigate("/", { replace: true });
+    window.location.reload();
   };
 
   return (
     <nav className="navbar-container">
-      {/* ✅ Reemplazar HomeBridge con una imagen */}
-      <div className="navbar-logo">
-        <img src={logo} alt="Logo" />
+      {/* ✅ Logo HomeBridge con "Bienvenido" SOLO en el Dashboard */}
+      <div className="navbar-left">
+        <img src={logo} alt="Logo" className="navbar-logo" />
+        {location.pathname === "/dashboard" && <span className="navbar-welcome">Bienvenido</span>}
       </div>
-
-      <div className="nav-links">
-        <NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-          Dashboard
-        </NavLink>
-        <NavLink to="/clientes" className={({ isActive }) => (isActive ? "active" : "")}>
-          Clientes
-        </NavLink>
-        <NavLink to="/prestamos" className={({ isActive }) => (isActive ? "active" : "")}>
-          Préstamos
-        </NavLink>
-        <NavLink to="/bancos" className={({ isActive }) => (isActive ? "active" : "")}>
-          Bancos
-        </NavLink>
-        <NavLink to="/mensajes" className={({ isActive }) => (isActive ? "active" : "")}>
-          Mensajes
-        </NavLink>
+      {/* ✅ Botón de Cerrar Sesión con console.log para verificar */}
+      <div className="logout-container">
+      <button className="logout-icon" onClick={handleLogout}>
+      <FaSignOutAlt />
+      </button>
       </div>
-
-      <Button variant="danger" onClick={handleLogout}>
-        CERRAR SESIÓN
-      </Button>
     </nav>
   );
 };
 
 export default Navbar;
+
+
 
 

@@ -1,12 +1,29 @@
 .cliente-detalle-container {
-    width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
-    height: 100vh; /* 🔹 Ocupar toda la altura */
-    font-size: 20px;
-    padding: 50px;
-    background-color: #f8f9fa;
-    min-height: 100vh;
-    text-align: center;
+  width: calc(100vw - 250px);  /* 🔹 Restamos el ancho del sidebar */
+  min-height: 100vh;
+  font-size: 20px;
+  padding: 50px;
+  background-color: #f8f9fa;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   }
+
+  /* 📌 Contenedor de la tabla */
+.cliente-detalle-table-container {
+  width: 100%;
+  max-width: 1400px; /* 🔹 Asegura expansión máxima en PC */
+  overflow-x: auto;
+}
+
+/* 📌 Expansión de la Tabla */
+table {
+  width: 100%;
+  max-width: 100%;  /* 🔹 Asegura que use todo el espacio disponible */
+  border-collapse: collapse;
+  table-layout: fixed; /* 🔹 Distribución uniforme en PC */
+}
 
   /* 📌 Ajuste del título */
 .ClienteDetalle-title {
@@ -29,14 +46,18 @@
   
   .detalle-content {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
     margin-top: 40px;
+    max-width: 1000px;
   }
   
   /* 📌 Estilos para Ficha del Cliente y Datos Adicionales */
   .ficha-cliente, .datos-adicionales {
     flex: 1;
+    min-width: 350px;
+    max-width: 450px;
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -45,7 +66,8 @@
   }
   
   .ficha-cliente h2, .datos-adicionales h2 {
-    font-size: 30px;
+    text-align: center;
+    font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 15px;
   }
@@ -66,10 +88,44 @@
     background-color: #0056b3;
   }
   
-  /* 📌 Responsivo */
-  @media (max-width: 768px) {
-    .detalle-content {
-      flex-direction: column;
-    }
+/* 📌 Responsivo para celulares */
+@media (max-width: 768px) {
+  .cliente-detalle-container {
+      width: 100vw;
+      padding: 20px;
+      margin-top: 50px; /* 🔹 Baja más el título para que no se solape */
   }
-  
+
+  .ClienteDetalle-title {
+    font-size: 32px;
+    margin-top: 120px; /* 🔹 Baja más el título para que no se solape */
+}
+
+.cliente-detalle-container {
+  padding-top: 20px; /* 🔹 Añade más espacio superior */
+}
+
+  .detalle-content {
+      flex-direction: column; /* 🔹 Apilar cuadros en móviles */
+      align-items: center;
+      width: 100%;
+  }
+
+  .ficha-cliente, .datos-adicionales {
+      width: 90%; /* ✅ Ocupa casi todo el ancho */
+      max-width: 100%;
+      padding: 15px;
+      margin-bottom: 15px; /* 🔹 Espaciado entre cuadros */
+  }
+
+  .ficha-cliente h2, .datos-adicionales h2 {
+      font-size: 1.3rem;
+  }
+  /* 📌 Expandir tablas en móviles */
+  table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+}

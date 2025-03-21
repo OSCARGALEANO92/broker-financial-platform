@@ -1,71 +1,42 @@
-import React from "react";
-import { Box } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Box, IconButton } from "@mui/material"; // ✅ Agregué IconButton
+import { Link } from "react-router-dom";
 import { FaUsers, FaHandHoldingUsd, FaUniversity, FaEnvelope, FaCogs, FaTachometerAlt } from "react-icons/fa";
-import logo from "../assets/HB-Logo_mejorado.png.png"; // Asegúrate de que la ruta sea correcta
+import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material"; 
+import "./Sidebar.css";
 
 const Sidebar = () => {
-  const navigate = useNavigate(); // Hook para manejar la navegación en React Router
-  const userRole = localStorage.getItem("userRole"); // ✅ Obtener el rol del usuario
+  const userRole = localStorage.getItem("userRole");
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userRole"); // ✅ Borrar el rol al cerrar sesión
-    setTimeout(() => {
-      navigate("/", { replace: true });
-    }, 100);
-  };
-
-  // 🔹 Función para renderizar enlaces
   const SidebarLink = ({ to, icon, text }) => (
-    <Link
-      to={to}
-      className="sidebar-link"
-    >
+    <Link to={to} className="sidebar-link" onClick={() => setMenuAbierto(false)}>
       {icon} {text}
     </Link>
   );
 
   return (
     <>
-      {/* 🔹 Navbar Barra de navegación superior */}
-      <Box
-        sx={{
-          width: "100%",
-          height: "60px",
-          backgroundColor: "#212529", // Fondo oscuro
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 20px",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          zIndex: 1000,
-        }}
-      >
-        {/* ✅ Reemplazar HomeBridge con un logo */}
-        <Link to="/dashboard" style={{ textDecoration: "none" }}>
-          <img
-            src={logo}
-            alt="HomeBridge Logo"
-            style={{
-              height: "60px",  // Ajustar tamaño sin deformar
-              width: "auto",
-              maxWidth: "450px",
-              objectFit: "contain",
-            }}
-          />
-        </Link>
-      </Box>
+      {/* 🔹 Botón Hamburguesa (Solo en móviles) */}
+      <IconButton
+      sx={{
+        color: "white",
+        display: { xs: "block", sm: "block", md: "none" },
+        position: "absolute",
+        right: "20px",
+        zIndex: 1200,
+   }}
+      onClick={() => setMenuAbierto(!menuAbierto)}
+>
+      {menuAbierto ? <CloseIcon /> : <MenuIcon />}
+      </IconButton>
 
-      {/* 🔹 Barra lateral */}
-      <Box className="sidebar">
+      {/* 🔹 Sidebar */}
+      <Box className={`sidebar ${menuAbierto ? "sidebar-open" : ""}`}>
         <div className="sidebar-menu">
-          {/* ✅ Orden fijo */}
           <SidebarLink to="/dashboard" icon={<FaTachometerAlt />} text="Dashboard" />
           {(userRole === "admin" || userRole === "broker") && (
-            <SidebarLink to="/Prestamos" icon={<FaHandHoldingUsd />} text="Solicitudes" />
+            <SidebarLink to="/prestamos" icon={<FaHandHoldingUsd />} text="Solicitudes" />
           )}
           {(userRole === "admin" || userRole === "banco" || userRole === "broker") && (
             <SidebarLink to="/clientes" icon={<FaUsers />} text="Clientes" />

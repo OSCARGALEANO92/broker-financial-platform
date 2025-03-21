@@ -52,6 +52,8 @@ body::-webkit-scrollbar {
 .main-layout {
   display: flex;
   flex: 1;
+  width: 100%;
+  min-height: 100vh; /* ✅ Asegurar altura completa */
 }
 
 /* 📌 Ajustar la barra lateral */
@@ -64,6 +66,18 @@ body::-webkit-scrollbar {
   left: 0;
   top: 0;
   overflow-y: auto;
+  transition: transform 0.3s ease-in-out; /* ✅ Transición para ocultarlo */
+}
+
+/* 📌 Ocultar la barra lateral en móviles cuando está cerrada */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0); /* ✅ Mostrar cuando está abierto */
+  }
 }
 
 /* 📌 Ajustar el contenido principal */
@@ -76,6 +90,14 @@ body::-webkit-scrollbar {
   align-items: center;
   justify-content: flex-start;
   overflow-y: auto; /* ✅ Permitir desplazamiento vertical */
+  transition: margin-left 0.3s ease-in-out; /* ✅ Animación suave */
+}
+
+/* 📌 Ajuste para móviles cuando el sidebar está cerrado */
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0; /* ✅ El contenido debe ocupar toda la pantalla */
+  }
 }
 
 /* 📌 Ajustar el formulario */

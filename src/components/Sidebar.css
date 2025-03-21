@@ -1,53 +1,82 @@
-/* 📌 Estilos generales de la barra lateral */
+/* 📌 Estilos generales del sidebar */
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  width: 250px; /* Mantiene el tamaño fijo de la barra lateral */
-  height: 100vh; /* Ajusta la altura total */
-  min-height: 100vh; /* Previene recorte */
-  justify-content: space-between; /* Distribuye los elementos */
-  padding: 20px 0; /* Espacio superior e inferior */
+  width: 250px;
+  height: 100vh;
+  background-color: #121212;
   position: fixed;
   left: 0;
-  top: 0;
-  bottom: 0;
-  background-color: #111; /* Color oscuro para la barra lateral */
-  overflow: hidden; /* Evita scroll dentro de la sidebar */
-  padding-top: 20px;
+  top: 60px; /* 🔹 Ahora empieza después del navbar */
+  transition: transform 0.3s ease-in-out;
 }
 
-.sidebar::-webkit-scrollbar {
-  width: 0; /* Hace la barra de desplazamiento invisible */
-  height: 0; /* Oculta la barra de desplazamiento horizontal */
+/* 🔹 Ocultar el sidebar en móviles cuando está cerrado */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    top: 0; /* 🔹 Ahora cubre toda la pantalla cuando está abierto */
+    z-index: 1200; /* 🔹 Se asegura de estar sobre el navbar al abrir */
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
 }
 
-/* 📌 Contenedor de los elementos del menú */
-.sidebar-menu {
-  flex-grow: 1; /* Permite que crezca para empujar "Ajustes" */
+/* 🔹 Enlaces del sidebar */
+.sidebar-link {
   display: flex;
-  flex-direction: column;
-  gap: 10px; /* Espacio entre elementos */
-  padding-bottom: 50px; /* Asegura espacio suficiente para el botón de ajustes */
-  overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
-  overflow-x: hidden; /* Evita desplazamiento horizontal */
-  scrollbar-width: none; /* Para Firefox */
-  -ms-overflow-style: none; /* Para Edge y IE */
+  align-items: center;
+  padding: 10px 15px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background 0.3s;
 }
 
-/* 📌 Asegurar que "Ajustes" NO quede tan abajo */
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 🔹 Iconos en los enlaces */
+.sidebar-link svg {
+  margin-right: 10px;
+}
+
+/* 📌 Botón hamburguesa (🔹 Ahora solo en móviles) */
+.menu-hamburguesa {
+  display: none;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1300; /* 🔹 Asegura que esté sobre el navbar */
+  color: white;
+  font-size: 24px;
+}
+
+/* ✅ Mostrar el botón hamburguesa solo en pantallas pequeñas */
+@media (max-width: 768px) {
+  .menu-hamburguesa {
+    display: block;
+  }
+}
+
+/* 📌 Ajustar "Ajustes" en el sidebar */
 .ajustes {
-  margin-top: 20px; /* Evita que se oculte demasiado abajo */
-  padding-bottom: 20px; /* Más espacio extra */
+  margin-top: 20px;
+  padding-bottom: 20px;
   position: relative;
 }
 
-/* 📌 Botón de ajustes */
+/* 📌 Ajustar botón de ajustes */
 .sidebar-footer {
   display: flex;
   justify-content: center;
   padding: 10px;
   position: absolute;
-  bottom: 20px; /* Levanta el botón para que no se corte */
+  bottom: 20px;
   width: 100%;
 }
 
@@ -66,3 +95,6 @@
 .settings-button:hover {
   background-color: #555;
 }
+
+
+

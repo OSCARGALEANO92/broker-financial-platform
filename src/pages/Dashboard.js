@@ -1,46 +1,27 @@
-import React from "react";
-import { Container, Navbar, Nav, Card, Button } from "react-bootstrap";
+import React, {useState} from "react";
+import { Card } from "react-bootstrap";
 import { FaUsers, FaHandHoldingUsd, FaTimesCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar"; 
+import Navbar from "../components/Navbar"; // 🔹 Importamos el Navbar global
 import "./Dashboard.css";
-import userImage from "../assets/homebridge-logo.png"; // 📌 Imagen de usuario
 import logo from "../assets/HomeBridge.png.png"; // 📌 Logo principal
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    console.log("Cerrando sesión...");
-    localStorage.removeItem("authToken");
-    navigate("/", { replace: true });
-    window.location.reload();
-  };
+  const [menuAbierto, setMenuAbierto] = useState(false); // ✅ Estado para el sidebar
 
   return (
     <div className="dashboard-container">
-      {/* 🔹 Navbar superior */}
-      <Navbar bg="dark" variant="dark" expand="lg" className="p-3 fixed-top">
-        <Container>
-          <Navbar.Brand href="#" className="d-flex align-items-center">
-            {/* 📌 Imagen del usuario */}
-            <img src={userImage} alt="Usuario" className="user-avatar" />
-            <span className="ms-2">Bienvenido Oscar</span>
-          </Navbar.Brand>
-          <Nav className="ms-auto">
-            <Button variant="danger" className="logout-button" onClick={handleLogout}>
-              CERRAR SESIÓN
-            </Button>
-          </Nav>
-        </Container>
-      </Navbar>
+      {/* ✅ Navbar (solo un navbar global) */}
+      <Navbar toggleSidebar={() => setMenuAbierto(!menuAbierto)} />
 
       {/* 🔹 Barra lateral */}
-      <Sidebar />
+      <Sidebar menuAbierto={menuAbierto} />
 
       {/* 🔹 Contenido principal */}
-      <div className="main-content">
-        {/* 🔹 Logo principal en lugar del texto */}
+      <div className={`main-content ${menuAbierto ? "sidebar-visible" : ""}`}>
+        {/* 🔹 Logo principal */}
         <div className="header">
           <img src={logo} alt="HomeBridge Logo" className="logo-img" />
         </div>
@@ -86,7 +67,6 @@ const Dashboard = () => {
 
         {/* 🔹 NUEVOS CUADROS DE INFORMACIÓN */}
         <div className="info-cards-container">
-          {/* 🔹 Últimas solicitudes */}
           <Card className="info-card">
             <Card.Header>
               <strong>Las últimas solicitudes</strong> <span className="ver-todo" onClick={() => navigate("/clientes")}>Ver todo</span>
@@ -124,6 +104,7 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
 
 
 

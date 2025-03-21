@@ -21,8 +21,14 @@
   width: calc(100% - 14rem); /* Ajustar el ancho */
   padding: 30px;
   min-height: 100vh; /* Que ocupe toda la pantalla */
+  flex-grow: 1; /* ✅ Permite que el contenido se expanda */
+  transition: margin-left 0.3s ease-in-out;
 }
 
+/* 📌 Contenedor general */
+.content-wrapper {
+  display: flex;
+}
 /* 📌 Ajustar el título */
 .dashboard-title {
   font-size: 1.8rem;
@@ -337,16 +343,53 @@
   margin: 0 auto; /* Centrar la imagen */
 }
 
-/* 📌 Responsividad */
+/* 📌 Ajuste de tarjetas en móviles */
 @media (max-width: 768px) {
-  .dashboard-container {
-    flex-direction: column;
-    align-items: center;
+  .card-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 10px; /* 🔹 Espaciado entre tarjetas */
   }
 
-  .dashboard-content {
-    flex-direction: column;
-    align-items: center;
+  .card-custom {
+      width: 90%; /* 🔹 Asegura que las tarjetas no se amontonen */
+      text-align: center;
+  }
+
+  /* 📌 Ajuste del título y logo */
+  .header {
+      text-align: center;
+      width: 100%;
+  }
+
+  .logo-img {
+      width: 150px; /* 🔹 Reduce el tamaño del logo */
+      margin-bottom: 10px;
+  }
+
+  /* 📌 Evitar solapamiento de la barra superior */
+  .navbar-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 10px 15px;
+  }
+
+  .menu-hamburguesa {
+      order: 1;
+  }
+
+  .logout-button {
+      order: 2;
+  }
+
+  /* 📌 Asegurar espacio entre el logo y las tarjetas */
+  .main-content {
+      margin-top: 20px; /* 🔹 Baja un poco las tarjetas */
+      width: 100%;
   }
 }
-

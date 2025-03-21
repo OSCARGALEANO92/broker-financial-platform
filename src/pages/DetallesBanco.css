@@ -7,13 +7,17 @@
     align-items: center;
     justify-content: flex-start;
     padding: 30px;
-    margin-top: 20px; /* ✅ Baja el título para que no se superponga con el navbar */
+    overflow: auto;
+    background: none; /* ❌ Elimina fondo innecesario */
+    box-shadow: none; /* ❌ Elimina sombras */
+    border: none; /* ❌ Elimina bordes */
 }
 
 /* 📌 Título del Banco */
 .DetallesBanco-title {
     font-size: 2.5rem;
     font-weight: bold;
+    margin-top: 50px; /* 🔹 Aumentado para bajar más el título */
     text-align: center;
     margin-bottom: 10px;
     color: #222;
@@ -175,16 +179,13 @@ tr:hover {
     background-color: #0056b3;
   }
 
-/* 📌 RESPONSIVIDAD: Ajustar tabla en pantallas pequeñas */
-@media (max-width: 1024px) {
-    .DetallesBanco-container {
-        width: 100%;
-        padding: 15px;
-    }
 
-    .DetallesBanco-title {
-        font-size: 28px;
-        margin-top: 100px; /* ✅ Baja más el título si el navbar lo cubre */
+/* 📌 RESPONSIVIDAD: Ajustar para móviles */
+@media (max-width: 768px) {
+    .DetallesBanco-container {
+        width: 100vw; /* ✅ Ocupar todo el ancho */
+        margin-left: 0; /* ✅ Evita desplazamiento lateral */
+        padding: 15px;
     }
 
     .DetallesBanco-table-container {
@@ -192,19 +193,38 @@ tr:hover {
         display: block;
     }
 
-    table {
-        font-size: 14px;
+    .DetallesBanco-title {
+        font-size: 24px;
+        margin-top: 80px; /* ✅ Ajuste para evitar superposición */
     }
 
     th, td {
+        font-size: 14px;
         padding: 8px;
+        white-space: nowrap; /* ✅ Evita que el texto se desborde */
     }
 
     .DetallesBanco-button {
-        font-size: 14px;
-        padding: 10px 15px;
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .DetallesBanco-resumen {
+        display: flex;
+        flex-direction: column; /* 🔹 Acomoda los cuadros uno debajo del otro */
+        align-items: center;
+        gap: 10px;
+    }
+
+    .resumen-card {
+        width: 90%; /* 🔹 Ocupa más espacio en la pantalla */
+        text-align: center;
+        padding: 15px;
+        font-size: 18px;
     }
 }
+
+
 
 
 

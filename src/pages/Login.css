@@ -5,7 +5,10 @@
   align-items: center; /* Centrar verticalmente */
   width: 100vw;
   height: 100vh;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #f8f9fa; /* 🔹 Fondo ligero */
 }
 
 /* 🔹 Tarjeta del login */
@@ -18,7 +21,7 @@
   text-align: center;
   /* 🔹 Ajuste para mover un poco a la izquierda */
   position: absolute;
-  left: 43%;  /* Ajusta según necesidad */
+  left: 50%;  /* Ajusta según necesidad */
   transform: translateX(-50%);
 }
 
@@ -71,10 +74,17 @@
 }
 
 /* 🔹 Responsividad */
-@media (max-width: 500px) {
+@media (max-width: 1024px) {
+  .login-card {
+    left: 50%; /* 🔹 Vuelve al centro en tablets */
+  }
+}
+
+@media (max-width: 768px) {
   .login-card {
     width: 90%;
-    padding: 20px;
+    padding: 25px;
+    left: 50%; /* 🔹 Se centra en móviles */
   }
 
   .login-logo {
@@ -86,7 +96,18 @@
   }
 }
 
+@media (max-width: 480px) {
+  .login-card {
+    width: 95%;
+    padding: 20px;
+    left: 50%; /* 🔹 Centrado perfecto en móviles */
+  }
 
+  .login-logo {
+    width: 140px;
+  }
 
-
-  
+  .login-title {
+    font-size: 1.2rem;
+  }
+}

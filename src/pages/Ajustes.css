@@ -96,6 +96,57 @@
   background: #0056b3;
 }
 
+/* 📌 Responsividad */
+@media (max-width: 1024px) {
+  .ajustes-container {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ajustes-container {
+    width: 95%;
+    margin-top: 40px;
+  }
+
+  .ajustes-title {
+    font-size: 24px;
+  }
+
+  .ajustes-subtitle {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ajustes-container {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .ajustes-title {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .ajustes-subtitle {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .ajustes-input-group input {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .mostrar-contrasena,
+  .ajustes-button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
 
 
 

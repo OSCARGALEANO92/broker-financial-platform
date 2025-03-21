@@ -1,54 +1,119 @@
+/* 📌 Estilos generales del Navbar */
 .navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #212529;
-    color: white;
-    padding: 15px 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 🔹 Distribuye los elementos correctamente */
+  padding: 10px 20px;
+  background-color: #212529;
+  height: 60px;
+  position: fixed; /* 🔹 Fija el navbar en la parte superior */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1200; /* 🔹 Asegura que siempre esté por encima de otros elementos */
+}
+
+/* ✅ Contenedor del logo y "Bienvenido" */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 150px; /* 🔹 Espacio entre logo y texto */
+}
+
+/* ✅ Estilo del logo */
+.navbar-logo {
+  height: 40px; /* 🔹 Reducir altura */
+  width: auto;
+  max-width: 250px; /* 🔹 Ajustar ancho máximo */
+  object-fit: contain; /* 🔹 Evita distorsión */
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espacio entre el logo y el texto */
+}
+
+/* ✅ Texto "Bienvenido" (solo en Dashboard) */
+.navbar-welcome {
+  font-size: 1.8rem; /* 🔹 Ajusta el tamaño del texto */
+  font-weight: bold; /* 🔹 Lo hace más grueso */
+  color: white;
+  font-size: 32px;
+  display: block; /* 🔹 Asegura que siempre se muestre */
+}
+
+/* 📌 Contenedor de los botones (hamburguesa y cerrar sesión) */
+.navbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 🔹 Espacio entre los botones */
+}
+
+/* ✅ Botón Hamburguesa */
+.menu-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  display: none; /* 🔹 Ocultarlo en escritorio */
+}
+
+
+/* 📌 Estilos del botón de cerrar sesión */
+.logout-container {
+  background: none;
+  border: none;
+  color: rgb(246, 239, 239); /* 🔹 Color del icono */
+  font-size: 15px; /* 🔹 Tamaño del icono */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.3s ease-in-out;
+  margin-left: auto; /* 🔹 Mueve el botón más a la izquierda */
+}
+
+.logout-icon:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+
+/* 📌 Responsividad para móviles */
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-direction: row;
+    height: auto;
+    padding: 10px;
   }
-  
-  /* ✅ Estilo del logo */
-  .navbar-logo img {
-    height: 50px; /* 🔹 Ajusta la altura sin expandirse */
-    width: auto; /* 🔹 Mantiene la proporción */
-    max-width: 150px; /* 🔹 Evita que crezca demasiado */
-    object-fit: contain; /* 🔹 Evita que se deforme */
+
+  .navbar-left {
+    gap: 5px;
   }
-  
-  .navbar-container h1 {
-    margin: 0;
-    font-size: 1.5rem;
+
+  .navbar-logo {
+    max-width: 120px;
   }
-  
-  .navbar-container button {
-    background-color: #dc3545;
-    border: none;
-    padding: 10px 15px;
+
+  .navbar-welcome {
+    font-size: 14px; /* 🔹 Reduce el tamaño en pantallas pequeñas */
   }
-  
-  .nav-links {
-    display: flex;
-    gap: 15px;
+
+  /* 📌 Ajuste del botón de cerrar sesión */
+  .logout-container {
+    font-size: 16px;
+    padding: 6px 50px;
   }
-  
-  .nav-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    padding: 8px 12px;
-    border-radius: 5px;
+
+  .logout-button {
+    font-size: 12px;
+    padding: 6px 10px;
   }
-  
-  .nav-links a:hover {
-    background-color: #343a40;
-  }
-  
-  .nav-links .active {
-    background-color: #007bff;
-  }
+  .menu-hamburguesa {
+    display: block; 
+}
+
+.nav-buttons {
+    gap: 8px; /* 🔹 Espaciado menor en móviles */
+}
+}

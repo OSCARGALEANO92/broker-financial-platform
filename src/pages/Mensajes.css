@@ -8,19 +8,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 20px;
+  padding: 30px;
   overflow: auto;
-  background-color: #f8f9fa;
-  margin-left: 20px; /* ✅ Evita que la tabla se esconda detrás del sidebar */
+  background: none; /* ❌ Elimina fondo innecesario */
+  box-shadow: none; /* ❌ Elimina sombras */
+  border: none; /* ❌ Elimina bordes */
 }
 
 /* 📌 Título */
 .mensajes-title {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: bold;
   color: #333;
-  margin-top: 60px; /* 🔹 Mayor separación del navbar */
-  margin-bottom: 20px;
+  margin-top: 50px; /* 🔹 Mayor separación del navbar */
+  margin-bottom: 30px;
   text-align: center;
   width: 100%;
 }
@@ -28,12 +29,12 @@
 /* 📌 Tabla de Mensajes */
 .mensajes-table-container {
   width: 100%;
-  max-width: 1200px; /* 🔹 Ajuste del tamaño máximo */
   border-collapse: collapse;
   background: white;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  table-layout: auto; /* ✅ Ajusta dinámicamente el ancho */
   overflow-x: auto;
   margin-top: 10px; /* 🔹 Espacio extra */
 }
@@ -45,19 +46,25 @@
   background: none;
 }
 
-.mensajes-table th, .mensajes-table td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; /* ✅ Evita que el texto se desborde */
-}
-
-.mensajes-table th {
+/* 📌 Encabezado de la tabla */
+.mensajes-table-container th {
   background-color: #f4f4f4;
   font-weight: bold;
-  text-align: center; /* ✅ Centrando títulos */
+  text-transform: uppercase;
+  padding: 12px;
+  text-align: center;
+}
+
+/* 📌 Celdas de la tabla */
+.mensajes-table-container td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+/* 📌 Resaltar fila al pasar el cursor */
+.mensajes-table-container tr:hover {
+  background-color: #f1f1f1;
 }
 
 /* 📌 Botón de Ver Más */
@@ -119,14 +126,38 @@
   width: 100%;
 }
 
-/* 📌 Responsivo */
+/* 📌 Ajustar la paginación */
+.mensajes-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  width: 100%;
+  overflow: visible;
+}
+
+/* 📌 Ajustes responsivos */
 @media (max-width: 768px) {
-  .detalles-container {
-      flex-direction: column;
+  .mensajes-container {
+      width: 100vw; /* ✅ Ocupar todo el ancho en móviles */
   }
 
   .mensajes-table-container {
-      overflow-x: auto; /* ✅ Scroll horizontal en pantallas pequeñas */
+      overflow-x: auto; /* ✅ Permitir scroll horizontal si es necesario */
+      display: block;
+  }
+
+  .mensajes-table-container th,
+  .mensajes-table-container td {
+      font-size: 14px;
+      padding: 8px;
+      white-space: nowrap; /* 🔹 Evita que el texto se rompa */
+  }
+
+  .mensajes-pagination {
+      flex-direction: column; /* ✅ Paginación en columna en móviles */
+      text-align: center;
+      width: 100%;
   }
 }
 
