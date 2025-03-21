@@ -354,9 +354,25 @@
   }
 
   .card-custom {
-      width: 90%; /* 🔹 Asegura que las tarjetas no se amontonen */
+      width: 95%; /* 🔹 Asegura que las tarjetas no se amontonen */
+      max-width: 95%; /* 🔹 Evita que sobresalga */
       text-align: center;
   }
+
+  /* 📌 Asegurar que "Últimas Solicitudes" y "Últimos Mensajes" se apilen */
+  .info-cards-container {
+    display: flex;
+    flex-direction: column; /* 🔹 Apilar en móviles */
+    align-items: center;
+    gap: 15px; /* 🔹 Espacio entre cada tarjeta */
+    width: 100%;
+}
+
+.info-card {
+    width: 100%; /* 🔹 Ocupar todo el ancho */
+    max-width: 95%; /* 🔹 Evita desbordes */
+    text-align: center;
+}
 
   /* 📌 Ajuste del título y logo */
   .header {

@@ -288,7 +288,6 @@ label {
 }
 
 
-  /* 📌 Ajustes en dispositivos pequeños */
 @media (max-width: 1024px) {
   .prestamos-container {
       width: 100%;
@@ -349,4 +348,3 @@ label {
   }
 }
 }
-

@@ -210,19 +210,21 @@ tr:hover {
     }
 
     .DetallesBanco-resumen {
-        display: flex;
-        flex-direction: column; /* 🔹 Acomoda los cuadros uno debajo del otro */
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 🔹 2 columnas */
         gap: 10px;
+        justify-content: center;
+        align-items: center;
     }
 
     .resumen-card {
-        width: 90%; /* 🔹 Ocupa más espacio en la pantalla */
+        width: 100%; /* 🔹 Ocupa más espacio en la pantalla */
         text-align: center;
         padding: 15px;
         font-size: 18px;
     }
 }
+
 
 
 
