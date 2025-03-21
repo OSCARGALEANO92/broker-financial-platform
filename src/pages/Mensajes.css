@@ -1,9 +1,7 @@
-
-
 /* 📌 Contenedor Principal */
 .mensajes-container {
   width: calc(100vw - 250px);  /* 🔹 Ajuste con sidebar */
-  min-height: 100vh; /* 🔹 Ocupar toda la pantalla */
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,10 +28,8 @@
 .mensajes-table-container {
   width: 100%;
   border-collapse: collapse;
-  background: white;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   table-layout: auto; /* ✅ Ajusta dinámicamente el ancho */
   overflow-x: auto;
   margin-top: 10px; /* 🔹 Espacio extra */

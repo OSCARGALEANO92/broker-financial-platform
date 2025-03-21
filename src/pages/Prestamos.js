@@ -215,9 +215,7 @@ const handleBlur = (e) => {
       <input type="text" name="plazo" placeholder="Plazo" onBlur={handleBlur} onChange={handleChange} required/>
       <input type="text" name="destino" placeholder="Destino" onChange={handleChange} />
 
-      {/* 📌 Selección de banco */}
       <div className="bank-wrapper">
-        <label htmlFor="bancos" className="bank-label">Seleccionar Banco:</label>
         <select name="bancoSeleccionado" id="bancos" onChange={handleBankSelection} className="bank-select">
           <option value="">Seleccione un banco</option>
           {bancos.map((banco) => (
@@ -236,7 +234,6 @@ const handleBlur = (e) => {
                 </div>
                 </div>  
 
-    {/* 📌 Adjuntar Documentos */}
     <fieldset className="prestamos-form-section prestamos-step-4">
       <legend>Adjuntar Documentos</legend>
       <p className="prestamos-instrucciones">📄 Adjunta los documentos requeridos.</p>
