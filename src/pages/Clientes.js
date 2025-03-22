@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { GlobalContext } from "../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -6,13 +7,7 @@ import autoTable from "jspdf-autotable";
 import "./Clientes.css";
 
 const Clientes = () => {
-  const [clientes, setClientes] = useState([
-    { id: 1, fechaCreacion: "10-Mar-2025", documento: "12345678", nombre: "Juan Pérez", telefono: "0981-123456", direccion: "Asunción, Paraguay", montosolicitado: "₲10.000.000", banco: "Banco Nacional", estado: "Aprobado", fecha: "14-Mar-2025" },
-    { id: 2, fechaCreacion: "11-Mar-2025", documento: "87654321", nombre: "María Gómez", telefono: "0982-654321", direccion: "Luque, Paraguay", montosolicitado: "₲15.000.000", banco: "Banco Visión", estado: "Pendiente", fecha: "15-Mar-2025" },
-    { id: 3, fechaCreacion: "12-Mar-2025", documento: "23456789", nombre: "Carlos Rodríguez", telefono: "0983-789123", direccion: "San Lorenzo, Paraguay", montosolicitado: "₲20.000.000", banco: "Banco Itau", estado: "Rechazado", fecha: "16-Mar-2025" },
-    { id: 4, fechaCreacion: "13-Mar-2025", documento: "56789012", nombre: "Ana López", telefono: "0984-567890", direccion: "Encarnación, Paraguay", montosolicitado: "₲12.000.000", banco: "Banco Continental", estado: "Aprobado", fecha: "17-Mar-2025" },
-    { id: 5, fechaCreacion: "14-Mar-2025", documento: "67890123", nombre: "Pedro González", telefono: "0985-678901", direccion: "Ciudad del Este, Paraguay", montosolicitado: "₲9.000.000", banco: "Banco Atlas", estado: "Pendiente", fecha: "18-Mar-2025" }
-  ]);
+  const { clientes, setClientes } = useContext(GlobalContext); // Obtener clientes desde el contexto
 
   const navigate = useNavigate();
   const [searchDocumento, setSearchDocumento] = useState("");
@@ -49,8 +44,8 @@ const Clientes = () => {
   // Índices para la paginación
   const indiceInicial = (paginaActual - 1) * clientesPorPagina;
   const indiceFinal = indiceInicial + clientesPorPagina;
-  const clientesPaginados = clientes.slice(indiceInicial, indiceFinal);
-  const totalPaginas = Math.ceil(clientes.length / clientesPorPagina);
+  const clientesPaginados = filteredClientes.slice(indiceInicial, indiceFinal);
+  const totalPaginas = Math.ceil(filteredClientes.length / clientesPorPagina);
 
   // Funciones de paginación
   const siguientePagina = () => {
@@ -95,28 +90,49 @@ const Clientes = () => {
       return;
     }
 
-  // 🔹 Actualizar el estado del cliente en la lista
-  setClientes((prevClientes) =>
-    prevClientes.map((cliente) =>
-      cliente.id === id ? { ...cliente, estado: nuevoEstado } : cliente
-    )
-  );
-  setActiveMenu(null); // Cerrar el menú
-  alert(`✅ Cliente ${id}: Estado actualizado a "${nuevoEstado}" con mensaje: "${mensaje}"`);
-};
+    const cliente = clientes.find((c) => c.id === id);
+    if (!cliente) return;
 
+    const nuevoMensaje = {
+      ...cliente, // Enviar toda la ficha del cliente
+      mensaje,
+      estado: nuevoEstado,
+    };
+
+    fetch("http://localhost:4000/mensajes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(nuevoMensaje),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMensajes((prev) => ({
+          ...prev,
+          [cliente.documento]: mensaje,
+        }));
+
+        setClientes((prevClientes) =>
+          prevClientes.map((c) =>
+            c.id === id ? { ...c, estado: nuevoEstado } : c
+          )
+        );
+
+        setActiveMenu(null);
+        alert(`✅ Cliente ${id}: Estado actualizado a "${nuevoEstado}" con mensaje: "${mensaje}"`);
+      })
+      .catch((err) => console.error("Error al enviar mensaje:", err));
+  };
    // Exportar a Excel
    const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(filteredClientes.map(cliente => ({
       Fechacreacion: cliente.fechaCreacion,
       Documento: cliente.documento,
       Nombre: cliente.nombre,
-      Teléfono: cliente.telefono,
-      Dirección: cliente.direccion,
-      Préstamo: cliente.montosolicitado,
+      "Monto Solicitado": cliente.montosolicitado,
       Banco: cliente.banco,
       Estado: cliente.estado,
       Fecha: cliente.fecha,
+      "Último Mensaje": mensajes[cliente.documento] || ""
     })));
 
     const wb = XLSX.utils.book_new();
@@ -134,12 +150,11 @@ const Clientes = () => {
         cliente.fechaCreacion,
         cliente.documento,
         cliente.nombre,
-        cliente.telefono,
-        cliente.direccion,
         cliente.montosolicitado,
         cliente.banco,
         cliente.estado,
         cliente.fecha,
+        mensajes[cliente.documento] || ""
       ]),
     });
     doc.save("Clientes.pdf");
@@ -178,12 +193,11 @@ const Clientes = () => {
           <th className="centrado">Fecha Creación</th>
             <th className="centrado">Documento</th>
             <th>Nombre</th>
-            <th className="centrado">Teléfono</th>
-            <th>Dirección</th>
             <th>Monto solicitado</th>
             <th>Banco</th>
             <th>Estado</th>
             <th>Fecha</th>
+            <th>Último Mensaje</th>
             <th>Detalles</th>
             {/* **✅ Mostrar Acciones solo si el usuario es "banco"** */}
             {(userRole === "banco" || userRole === "broker") && <th>Acciones</th>}
@@ -194,13 +208,12 @@ const Clientes = () => {
             <tr key={index}>
               <td className="centrado">{cliente.fechaCreacion}</td>
               <td className="centrado">{cliente.documento}</td>
-              <td className="centrado">{cliente.nombre}</td>
-              <td className="centrado">{cliente.telefono}</td>
-              <td className="centrado">{cliente.direccion}</td>
+              <td className="centrado">{cliente.nombres || cliente.nombre}</td>
               <td className="centrado">{cliente.montosolicitado}</td>
               <td className="centrado">{cliente.banco}</td>
-              <td className={`estado-${cliente.estado.toLowerCase()}`}>{cliente.estado}</td>
+              <td className={`estado-${(cliente.estado || '').toLowerCase()}`}>{cliente.estado || "Sin estado"}</td>
               <td>{cliente.fecha}</td>
+              <td>{mensajes[cliente.documento] || "Sin mensajes"}</td>
               <td>
                 <button className="clientes-button" onClick={() => handleVerDetalles(cliente)}>
                   Ver Detalles

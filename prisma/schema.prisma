@@ -21,5 +21,51 @@ model Broker {
   email   String @unique
 }
 
+model Cliente {
+  id               Int      @id @default(autoincrement())
+  documento        String   @unique
+  nombre           String
+  telefono         String?
+  direccion        String?
+  montosolicitado  Float
+  banco            String
+  estado           String   @default("Pendiente")
+  fechaCreacion    DateTime @default(now())
 
+  correo           String?
+  barrio           String?
+  ciudad           String?
+  fechaNacimiento  DateTime?
+  estadoCivil      String?
+  nacionalidad     String?
+  empresa          String?
+  ruc              String?
+  actividadEmpresa String?
+  ingresos         Float?
+  fechaCobro       DateTime?
+  antiguedad       String?
+
+  referencia1      String?
+  relacion1        String?
+  celular1         String?
+  referencia2      String?
+  relacion2        String?
+  celular2         String?
+  referencia3      String?
+  relacion3        String?
+  celular3         String?
+
+  plazo            String?
+  destino          String?
+  coodeudor        Boolean  @default(false)
+}
+
+model Mensaje {
+  id        Int      @id @default(autoincrement())
+  documento String
+  nombre    String
+  mensaje   String
+  estado    String
+  fecha     DateTime @default(now())
+}
 

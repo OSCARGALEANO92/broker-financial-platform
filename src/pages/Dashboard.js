@@ -1,22 +1,38 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import { Card } from "react-bootstrap";
 import { FaUsers, FaHandHoldingUsd, FaTimesCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext"; // ✅ Importar el contexto
 import Sidebar from "../components/Sidebar"; 
 import Navbar from "../components/Navbar"; // 🔹 Importamos el Navbar global
 import "./Dashboard.css";
-import logo from "../assets/HomeBridge.png.png"; // 📌 Logo principal
+import logo from "../assets/HB-Logo_mejorado.png.png"; // 📌 Logo principal
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [menuAbierto, setMenuAbierto] = useState(false); // ✅ Estado para el sidebar
+  const { clientes, mensajes } = useContext(GlobalContext); // ✅ Obtener datos desde el contexto
+
+  // 🔹 Filtrar clientes según el estado
+  const clientesActivos = clientes.length;
+  const prestamosAprobados = clientes.filter((c) => c.estado === "Aprobado").length;
+  const prestamosPendientes = clientes.filter((c) => c.estado === "Pendiente" || c.estado === "Verificando").length;
+  const prestamosRechazados = clientes.filter((c) => c.estado === "Rechazado").length;
+
+  // 🔹 Obtener últimas solicitudes
+  const ultimasSolicitudes = [...clientes]
+    .sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion)) // Ordenar por fecha
+    .slice(0, 4); // Tomar solo las últimas 4
+
+  // 🔹 Obtener últimos mensajes
+  const ultimosMensajes = Object.values(mensajes)
+  .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+  .slice(0, 4);
+
 
   return (
     <div className="dashboard-container">
-      {/* ✅ Navbar (solo un navbar global) */}
       <Navbar toggleSidebar={() => setMenuAbierto(!menuAbierto)} />
-
-      {/* 🔹 Barra lateral */}
       <Sidebar menuAbierto={menuAbierto} />
 
       {/* 🔹 Contenido principal */}
@@ -33,7 +49,7 @@ const Dashboard = () => {
               <strong><FaUsers /> Clientes Activos</strong>
             </Card.Header>
             <Card.Body>
-              <Card.Title>1,245</Card.Title>
+              <Card.Title>{clientesActivos}</Card.Title>
             </Card.Body>
           </Card>
 
@@ -42,7 +58,7 @@ const Dashboard = () => {
               <strong><FaHandHoldingUsd /> Préstamos Aprobados</strong>
             </Card.Header>
             <Card.Body>
-              <Card.Title>850</Card.Title>
+              <Card.Title>{prestamosAprobados}</Card.Title>
             </Card.Body>
           </Card>
 
@@ -51,7 +67,7 @@ const Dashboard = () => {
               <strong><FaHandHoldingUsd /> Préstamos Pendientes</strong>
             </Card.Header>
             <Card.Body>
-              <Card.Title>300</Card.Title>
+              <Card.Title>{prestamosPendientes}</Card.Title>
             </Card.Body>
           </Card>
 
@@ -60,41 +76,48 @@ const Dashboard = () => {
               <strong><FaTimesCircle /> Préstamos Rechazados</strong>
             </Card.Header>
             <Card.Body>
-              <Card.Title>120</Card.Title>
+              <Card.Title>{prestamosRechazados}</Card.Title>
             </Card.Body>
           </Card>
         </div>
 
-        {/* 🔹 NUEVOS CUADROS DE INFORMACIÓN */}
-        <div className="info-cards-container">
+       {/* 🔹 NUEVOS CUADROS DE INFORMACIÓN */}
+       <div className="info-cards-container">
+          {/* 📌 Últimas Solicitudes */}
           <Card className="info-card">
             <Card.Header>
-              <strong>Las últimas solicitudes</strong> <span className="ver-todo" onClick={() => navigate("/clientes")}>Ver todo</span>
+              <strong>Las últimas solicitudes</strong> 
+              <span className="ver-todo" onClick={() => navigate("/clientes")}>Ver todo</span>
             </Card.Header>
             <Card.Body>
-              <div className="request-item highlight">
-                <strong>Marcos Vera</strong> - Préstamo $ 50.000 | Asunción | 15-Mar-2025
-              </div>
-              <div className="request-item">Tibério Costa - Inversión $ 150.000 | CDE | 15-Mar-2025</div>
-              <div className="request-item">Thalia Moura - Préstamo $ 60.000 | Encarnación | 15-Mar-2025</div>
-              <div className="request-item">Pedro Gonzalez - Préstamo $ 50.000 | Luque | 15-Mar-2025</div>
+              {ultimasSolicitudes.length > 0 ? (
+                ultimasSolicitudes.map((solicitud, index) => (
+                  <div key={index} className="request-item">
+                    <strong>{solicitud.nombre}</strong> - Préstamo ₲{solicitud.montosolicitado.toLocaleString()} | {solicitud.ciudad} | {new Date(solicitud.fechaCreacion).toLocaleDateString()}
+                  </div>
+                ))
+              ) : (
+                <p>No hay solicitudes recientes.</p>
+              )}
             </Card.Body>
           </Card>
 
-          {/* 🔹 Últimos mensajes */}
+          {/* 📌 Últimos mensajes */}
           <Card className="info-card">
             <Card.Header>
-              <strong>Últimos mensajes</strong> <span className="ver-todo" onClick={() => navigate("/mensajes")}>Ver todo</span>
+              <strong>Últimos mensajes</strong> 
+              <span className="ver-todo" onClick={() => navigate("/mensajes")}>Ver todo</span>
             </Card.Header>
             <Card.Body>
-              <div className="message-item">
-                <strong>Paulo Barrios</strong> | Envío de documentos | 15-Mar-2025 <span className="badge">HOY</span>
-              </div>
-              <div className="message-item">
-                <strong>Rodrigo Noguera</strong> | Solicitud aprobada | 15-Mar-2025 <span className="badge">HOY</span>
-              </div>
-              <div className="message-item">Flávia Santos | Mensaje del sitio | 14-Mar-2025</div>
-              <div className="message-item">Remax | ¿Conoces nuestras soluciones? | 14-Mar-2025</div>
+              {ultimosMensajes.length > 0 ? (
+                ultimosMensajes.map((msg, index) => (
+                  <div key={index} className="message-item">
+                    <strong>{msg.nombre}</strong> | {msg.mensaje} | {new Date(msg.fecha).toLocaleDateString()}
+                  </div>
+                ))
+              ) : (
+                <p>No hay mensajes recientes.</p>
+              )}
             </Card.Body>
           </Card>
         </div>

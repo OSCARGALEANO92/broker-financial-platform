@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext"; // Importar el contexto
 import "./Prestamos.css"; 
 
 const Prestamos = () => {
   const navigate = useNavigate(); 
+  const { agregarPrestamo } = useContext(GlobalContext);
   const [bancos, setBancos] = useState([]);
   const [formData, setFormData] = useState({
     nombres: "",
@@ -19,7 +21,7 @@ const Prestamos = () => {
     ruc: "",
     actividadEmpresa: "",
     ingresos: "",
-    fechaCobro: "",
+    antiguedad: "",
     referencias: [{ nombre: "", relacion: "", celular: "" }],
     monto: "",
     plazo: "",
@@ -52,21 +54,18 @@ const Prestamos = () => {
 
 const handleBlur = (e) => {
   const { name, value } = e.target;
-
   if (["ingresos", "monto", "plazo"].includes(name)) {
     let numericValue = value.replace(/\D/g, ""); // Solo números
     let formattedValue = new Intl.NumberFormat("es-ES").format(numericValue); // Aplicar separadores de miles
-
     setFormData((prevData) => ({ ...prevData, [name]: formattedValue }));
   }
 };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
     if (["ingresos", "monto", "plazo"].includes(name)) {
       // Formatear el número con separadores de miles
-      let numericValue = value.replace(/\D/g, ""); // Solo números
+      let numericValue = value.replace(/\D/g, ""); 
 
       setFormData((prevData) => ({ ...prevData, [name]: numericValue }));
     } else {
@@ -106,21 +105,21 @@ const handleBlur = (e) => {
   };
 
   const handleFileUpload = (event, tipoDocumento) => {
-    const files = Array.from(event.target.files); // Convertir FileList a array
+    const files = Array.from(event.target.files); 
     setFormData((prevData) => ({
       ...prevData,
       documentos: {
         ...prevData.documentos,
-        [tipoDocumento]: [...prevData.documentos[tipoDocumento], ...files], // Agregar nuevos archivos
+        [tipoDocumento]: [...prevData.documentos[tipoDocumento], ...files], 
       },
     }));
   };
 
   const handleNext = () => {
-    setStep(prev => prev < 5 ? prev + 1 : prev); // 🔹 Evita que se pase de 5
+    setStep(prev => prev < 5 ? prev + 1 : prev);
   };
   const handleBack = () => {
-    setStep(prev => prev > 1 ? prev - 1 : prev); // 🔹 Evita que baje de 1
+    setStep(prev => prev > 1 ? prev - 1 : prev);
   };
 
   const handleSubmit = (e) => {
@@ -128,9 +127,25 @@ const handleBlur = (e) => {
     console.log("Formulario Enviado:", formData);
     setMensaje("✅ Solicitud Procesada con Éxito");
 
-    setTimeout(() => {
-      navigate("/");
-    }, 3000);
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", JSON.stringify(formData));
+
+    Object.entries(formData.documentos).forEach(([tipo, archivos]) => {
+      archivos.forEach((archivo) => {
+        formDataToSend.append(tipo, archivo);
+      });
+    });
+
+    fetch("http://localhost:4000/prestamos", {
+      method: "POST",
+      body: formDataToSend,
+    })
+      .then((res) => res.json())
+      .then((nuevoClienteCreado) => {
+        agregarPrestamo(nuevoClienteCreado);
+        navigate("/clientes");
+      })
+      .catch((err) => console.error("Error al enviar:", err));
   };
 
   return (
@@ -171,16 +186,43 @@ const handleBlur = (e) => {
   <fieldset className="prestamos-form-section">
     <legend>Datos Laborales</legend>
     <div className="prestamos-form-grid">
-      <input type="text" name="empresa" placeholder="Nombre de la Empresa" onChange={handleChange} required />
-      <input type="text" name="ruc" placeholder="RUC" onChange={handleChange} required />
-      <input type="text" name="actividadEmpresa" placeholder="Actividad de la Empresa" onChange={handleChange} />
-      <input type="text" name="ingresos" placeholder="Ingresos Mensuales" value={formData.ingresos} onBlur={handleBlur} onChange={handleChange} />
-
-      {/* 🔹 Campo de fecha con descripción */}
-      <div className="label-input-container">
-        <label htmlFor="fechaCobro">Fecha de Cobro</label>
-        <input type="date" id="fechaCobro" name="fechaCobro" onChange={handleChange} />
-      </div>
+      <input
+        type="text"
+        name="empresa"
+        placeholder="Nombre de la Empresa"
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="text"
+        name="ruc"
+        placeholder="RUC"
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="text"
+        name="actividadEmpresa"
+        placeholder="Actividad de la Empresa"
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="text"
+        name="ingresos"
+        placeholder="Ingresos Mensuales"
+        value={formData.ingresos}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="text"
+        name="antiguedad"
+        placeholder="Antigüedad Laboral (ej: 3 años)"
+        onChange={handleChange}
+        required
+      />
     </div>
   </fieldset>
 )}

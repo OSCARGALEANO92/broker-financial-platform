@@ -1,67 +1,33 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { GlobalContext } from "../context/GlobalContext"; // Importar el contexto global
 import "./Mensajes.css";
 
 const Mensajes = () => {
+  const { mensajes, clientes, agregarMensaje, setClientes } = useContext(GlobalContext);
   const [filaExpandida, setFilaExpandida] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
-  const mensajesPorPagina = 5;
+  const mensajesPorPagina = 10;
 
-
-  // Lista de mensajes simulada
-  const mensajes = [
-    {
-      documento: "12345678",
-      nombre: "Juan Pérez",
-      banco: "Banco Nacional",
-      monto: "₲700.000.000",
-      fechaCarga: "12-Mar-2025",
-      estado: "Aprobado",
-      mensaje: "Solicitud procesada con éxito.",
-      historialMensajes: [
-        {
-          fechaHora: "10-Mar-2025 10:00 AM",
-          usuario: "Broker1",
-          mensaje: "Solicitud enviada al banco",
-          estado: "Pendiente",
-        },
-        {
-          fechaHora: "11-Mar-2025 03:30 PM",
-          usuario: "Banco Nacional",
-          mensaje: "Verificando documentos",
-          estado: "Verificando",
-        },
-        {
-          fechaHora: "12-Mar-2025 02:00 PM",
-          usuario: "Banco Nacional",
-          mensaje: "Solicitud procesada con éxito.",
-          estado: "Aprobado",
-        },
-      ],
-    },
-    {
-      documento: "87654321",
-      nombre: "María Gómez",
-      banco: "Banco Visión",
-      monto: "₲15.000.000",
-      fechaCarga: "13-Mar-2025",
-      estado: "Pendiente",
-      mensaje: "Falta verificación de documentos.",
-      historialMensajes: [
-        {
-          fechaHora: "11-Mar-2025 09:15 AM",
-          usuario: "Broker2",
-          mensaje: "Solicitud enviada al banco",
-          estado: "Pendiente",
-        },
-      ],
-    },
-  ];
+  if (!Array.isArray(mensajes)) {
+    return <p>Error: los mensajes no se pudieron cargar correctamente.</p>;
+  }
+ 
+ const mensajesCompletos = mensajes.map((m) => {
+  const cliente = clientes.find((c) => c.documento === m.documento);
+  return {
+    ...m,
+    banco: cliente?.banco || "-",
+    monto: cliente?.montosolicitado?.toLocaleString() || "-",
+    estado: cliente?.estado || "-",
+    fechaCarga: cliente?.fechaCreacion ? new Date(cliente.fechaCreacion).toLocaleDateString() : "-",
+  };
+}); 
 
   // 🔹 Funciones de Paginación
-  const totalPaginas = Math.ceil(mensajes.length / mensajesPorPagina);
+  const totalPaginas = Math.ceil(mensajesCompletos.length / mensajesPorPagina);
   const indiceInicial = (paginaActual - 1) * mensajesPorPagina;
   const indiceFinal = indiceInicial + mensajesPorPagina;
-  const mensajesPaginados = mensajes.slice(indiceInicial, indiceFinal);
+  const mensajesPaginados = mensajesCompletos.slice(indiceInicial, indiceFinal);
 
   const paginaAnterior = () => {
     if (paginaActual > 1) setPaginaActual(paginaActual - 1);
@@ -72,6 +38,45 @@ const Mensajes = () => {
   };
   const toggleDetalles = (documento) => {
     setFilaExpandida((prev) => (prev === documento ? null : documento));
+  };
+
+  const handleGuardar = (id) => {
+    const cliente = clientes.find((c) => c.id === id);
+    const mensajeTexto = mensajes[id];
+    const nuevoEstado = cliente?.estado;
+
+    if (!cliente || !mensajeTexto || !nuevoEstado) {
+      alert("Todos los campos son obligatorios.");
+      return;
+    }
+
+    const nuevoMensaje = {
+      documento: cliente.documento,
+      nombre: cliente.nombre,
+      mensaje: mensajeTexto,
+      estado: nuevoEstado,
+    };
+
+    fetch("http://localhost:4000/mensajes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(nuevoMensaje),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        agregarMensaje(data);
+        setClientes((prevClientes) =>
+          prevClientes.map((c) =>
+            c.id === id ? { ...c, estado: nuevoEstado } : c
+          )
+        );
+        alert(
+          `✅ Cliente ${cliente.nombre}: Estado actualizado a "${nuevoEstado}" con mensaje: "${mensajeTexto}"`
+        );
+      })
+      .catch((err) => console.error("Error al enviar mensaje:", err));
+
+    setFilaExpandida(null);
   };
 
   return (
@@ -102,9 +107,9 @@ const Mensajes = () => {
                 <td>{mensaje.monto}</td>
                 <td>{mensaje.fechaCarga}</td>
                 <td>
-                  <span className={`estado-${mensaje.estado.toLowerCase()}`}>
-                    {mensaje.estado}
-                  </span>
+                <span className={`estado-${mensaje?.estado?.toLowerCase() || 'sin-estado'}`}>
+                 {mensaje?.estado || 'Sin estado'}
+                </span>
                 </td>
                 <td>{mensaje.mensaje}</td>
                 <td>

@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { GlobalContext } from "../context/GlobalContext"; // Importar el contexto global
 import "./Bancos.css";
 
 const Bancos = () => {
   const userRole = localStorage.getItem("userRole"); // Obtener rol del usuario
   const navigate = useNavigate();
+  const { clientes } = useContext(GlobalContext); // Obtener clientes del contexto
   
   const bancosGuardados = JSON.parse(localStorage.getItem("bancosDisponibles")) || [
-    { id: 1, entidad: "Banco Nacional de Fomento", cantidad: 10, tasaInteres: 12 },
-    { id: 2, entidad: "Banco Visión", cantidad: 15, tasaInteres: 10.5 },
-    { id: 3, entidad: "Banco Familiar", cantidad: 8, tasaInteres: 13 },
-    { id: 4, entidad: "Banco Basa", cantidad: 20, tasaInteres: 9 },
-    { id: 5, entidad: "Banco Ueno", cantidad: 20, tasaInteres: 9 },
-    { id: 6, entidad: "Banco Itau", cantidad: 15, tasaInteres: 8 },
+    { id: 1, entidad: "Banco Nacional de Fomento", tasaInteres: 12 },
+    { id: 2, entidad: "Banco Visión", tasaInteres: 10.5 },
+    { id: 3, entidad: "Banco Familiar", tasaInteres: 13 },
+    { id: 4, entidad: "Banco Basa", tasaInteres: 9 },
+    { id: 5, entidad: "Banco Ueno", tasaInteres: 9 },
+    { id: 6, entidad: "Banco Itau", tasaInteres: 8 },
   ];
   
   const [bancos, setBancos] = useState(bancosGuardados);
@@ -22,6 +24,11 @@ const Bancos = () => {
   useEffect(() => {
     localStorage.setItem("bancosDisponibles", JSON.stringify(bancos));
   }, [bancos]);
+
+  // 🔹 Calcular la cantidad de solicitudes por banco
+  const calcularCantidadSolicitudes = (nombreBanco) => {
+    return clientes.filter(cliente => cliente.banco === nombreBanco).length;
+  };
 
   // Manejar cambios en la tasa de interés
   const handleTasaChange = (id, value) => {
@@ -62,7 +69,7 @@ const Bancos = () => {
         </button>
       )}
 
-      <div className="bancos-table-container">
+      
         <table>
           <thead>
             <tr>
@@ -76,7 +83,7 @@ const Bancos = () => {
             {bancos.map((banco) => (
               <tr key={banco.id}>
                 <td>{banco.entidad}</td>
-                <td>{banco.cantidad}</td>
+                <td>{calcularCantidadSolicitudes(banco.entidad)}</td>
                 <td>
                   {editando ? (
                     <input
@@ -99,7 +106,6 @@ const Bancos = () => {
             ))}
           </tbody>
         </table>
-      </div>
 
       {/* 🔹 Botón de Guardar Cambios (solo visible cuando se edita) */}
       {editando && (
