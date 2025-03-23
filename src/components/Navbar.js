@@ -15,14 +15,6 @@ const Navbar = ({ setIsAuthenticated }) => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userRole");
 
-    // ✅ Eliminar ajustes personalizados del localStorage
-    localStorage.removeItem(`${userRole}_nombreUsuario`);
-    localStorage.removeItem(`${userRole}_correo`);
-    localStorage.removeItem(`${userRole}_nombre`);
-    localStorage.removeItem(`${userRole}_apellidos`);
-    localStorage.removeItem(`${userRole}_telefono`);
-    localStorage.removeItem(`${userRole}_institucion`);
-
     if (setIsAuthenticated) {
       setIsAuthenticated(false);
     }

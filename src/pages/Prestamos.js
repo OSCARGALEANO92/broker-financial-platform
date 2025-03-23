@@ -23,7 +23,11 @@ const Prestamos = () => {
     actividadEmpresa: "",
     ingresos: "",
     antiguedad: "",
-    referencias: [{ nombre: "", relacion: "", celular: "" }],
+    referencias: [
+      { nombre: "", relacion: "", celular: "" },
+      { nombre: "", relacion: "", celular: "" },
+      { nombre: "", relacion: "", celular: "" }
+    ],
     monto: "",
     plazo: "",
     destino: "",
@@ -263,22 +267,27 @@ const Prestamos = () => {
 
           {/* 📌 SECCIÓN 3: REFERENCIAS PERSONALES */}
           {step === 3 && (
-            <fieldset className="prestamos-form-section">
-              <legend>Referencias Personales (Todos los campos son obligatorios)</legend>
-              <div className="prestamos-form-grid">
-                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} required/>
-                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} required/>
-                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} required/>
-                <br></br>
-                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} required/>
-                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} required/>
-                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} required/>
-                <br></br>
-                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} required/>
-                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} required/>
-                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} required/>
-              </div>
-            </fieldset>
+  <fieldset className="prestamos-form-section">
+    <legend>Referencias Personales (Todos los campos son obligatorios)</legend>
+    <div className="prestamos-form-grid">
+      {/* Referencia 1 */}
+      <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} required />
+      <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} required />
+      <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} required />
+      <br />
+
+      {/* Referencia 2 */}
+      <input type="text" name="referencia2" placeholder="Nombre y Apellido" onChange={handleChange} required />
+      <input type="text" name="relacion2" placeholder="Relación" onChange={handleChange} required />
+      <input type="text" name="celular2" placeholder="N° Celular" onChange={handleChange} required />
+      <br />
+
+      {/* Referencia 3 */}
+      <input type="text" name="referencia3" placeholder="Nombre y Apellido" onChange={handleChange} required />
+      <input type="text" name="relacion3" placeholder="Relación" onChange={handleChange} required />
+      <input type="text" name="celular3" placeholder="N° Celular" onChange={handleChange} required />
+    </div>
+  </fieldset>
           )}
 
           {/* 📌 SECCIÓN 4: SOLICITUD DE PRÉSTAMO Y ADJUNTAR DOCUMENTOS */}

@@ -9,7 +9,7 @@ const port = 4000;
 const prisma = new PrismaClient();
 
 const corsOptions = {
-  origin: ['http://3.229.249.89:3000', 'http://dev.homebridge.com:3000'],
+  origin: ['https://gestionhomebridge.com', 'http://gestionhomebridge.com', 'http://gestionhomebridge.com:3000', 'http://dev.homebridge.com:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
@@ -85,6 +85,11 @@ app.post(
   async (req, res) => {
     const data = JSON.parse(req.body.data);
     const archivos = req.files;
+    const documentosAdjuntos = {};
+
+for (const tipo in archivos) {
+  documentosAdjuntos[tipo] = archivos[tipo].map((file) => `/uploads/${file.filename}`);
+}
 
     try {
       const nuevoCliente = await prisma.cliente.create({
@@ -106,7 +111,7 @@ app.post(
           empresa: data.empresa,
           ruc: data.ruc,
           actividadEmpresa: data.actividadEmpresa,
-          ingresos: parseFloat(data.monto.replace(/\./g, "")),
+          ingresos: parseFloat(data.ingresos.replace(/\./g, "")),
           fechaCobro: data.fechaCobro ? new Date(data.fechaCobro) : null,
           referencia1: data.referencia1,
           relacion1: data.relacion1,
@@ -120,6 +125,7 @@ app.post(
           plazo: data.plazo,
           destino: data.destino,
           coodeudor: data.coodeudor,
+          documentos: documentosAdjuntos,
         },
       });
 

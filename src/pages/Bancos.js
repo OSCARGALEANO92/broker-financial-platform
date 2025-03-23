@@ -10,11 +10,12 @@ const Bancos = () => {
   
   const bancosGuardados = JSON.parse(localStorage.getItem("bancosDisponibles")) || [
     { id: 1, entidad: "Banco Nacional de Fomento", tasaInteres: 12 },
-    { id: 2, entidad: "Banco Visión", tasaInteres: 10.5 },
+    { id: 2, entidad: "Banco Sudameris", tasaInteres: 10.5 },
     { id: 3, entidad: "Banco Familiar", tasaInteres: 13 },
     { id: 4, entidad: "Banco Basa", tasaInteres: 9 },
     { id: 5, entidad: "Banco Ueno", tasaInteres: 9 },
     { id: 6, entidad: "Banco Itau", tasaInteres: 8 },
+    { id: 7, entidad: "Banco Gnb", tasaInteres: 9 },
   ];
   
   const [bancos, setBancos] = useState(bancosGuardados);
