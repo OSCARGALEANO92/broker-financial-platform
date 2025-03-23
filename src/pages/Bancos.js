@@ -15,7 +15,7 @@ const Bancos = () => {
     { id: 4, entidad: "Banco Basa", tasaInteres: 9 },
     { id: 5, entidad: "Banco Ueno", tasaInteres: 9 },
     { id: 6, entidad: "Banco Itau", tasaInteres: 8 },
-    { id: 7, entidad: "Banco Gnb", tasaInteres: 9 },
+    { id: 7, entidad: "Banco GNB", tasaInteres: 10 },
   ];
   
   const [bancos, setBancos] = useState(bancosGuardados);
