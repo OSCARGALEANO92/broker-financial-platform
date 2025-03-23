@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { GlobalContext } from "../context/GlobalContext"; // Importar el contexto
-import "./Prestamos.css"; 
+import { GlobalContext } from "../context/GlobalContext";
+import "./Prestamos.css";
+import { API_BASE } from "../config";
 
 const Prestamos = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const { agregarPrestamo } = useContext(GlobalContext);
   const [bancos, setBancos] = useState([]);
   const [formData, setFormData] = useState({
@@ -47,53 +48,51 @@ const Prestamos = () => {
   const [mensaje, setMensaje] = useState("");
   const [interes, setInteres] = useState(0);
   const [cuota, setCuota] = useState("");
+  const [errors, setErrors] = useState({});
 
   const formatNumber = (value) => {
-  return new Intl.NumberFormat("es-ES").format(value.replace(/\D/g, ""));
-};
+    return new Intl.NumberFormat("es-ES").format(value.replace(/\D/g, ""));
+  };
 
-const handleBlur = (e) => {
-  const { name, value } = e.target;
-  if (["ingresos", "monto", "plazo"].includes(name)) {
-    let numericValue = value.replace(/\D/g, ""); // Solo números
-    let formattedValue = new Intl.NumberFormat("es-ES").format(numericValue); // Aplicar separadores de miles
-    setFormData((prevData) => ({ ...prevData, [name]: formattedValue }));
-  }
-};
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (["ingresos", "monto", "plazo"].includes(name)) {
+      let numericValue = value.replace(/\D/g, "");
+      let formattedValue = new Intl.NumberFormat("es-ES").format(numericValue);
+      setFormData((prevData) => ({ ...prevData, [name]: formattedValue }));
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (["ingresos", "monto", "plazo"].includes(name)) {
-      // Formatear el número con separadores de miles
-      let numericValue = value.replace(/\D/g, ""); 
-
+      let numericValue = value.replace(/\D/g, "");
       setFormData((prevData) => ({ ...prevData, [name]: numericValue }));
     } else {
       setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   useEffect(() => {
-    // Simulación de obtención de bancos desde `Bancos.js`
     const bancosGuardados = JSON.parse(localStorage.getItem("bancosDisponibles")) || [];
     setBancos(bancosGuardados);
   }, []);
 
   const handleBankSelection = (e) => {
-    const bancoSeleccionado = bancos.find(bank => bank.entidad === e.target.value);
-    setFormData(prev => ({
+    const bancoSeleccionado = bancos.find((bank) => bank.entidad === e.target.value);
+    setFormData((prev) => ({
       ...prev,
-      bancoSeleccionado: e.target.value
+      bancoSeleccionado: e.target.value,
     }));
     setInteres(bancoSeleccionado ? parseFloat(bancoSeleccionado.tasaInteres) : 0);
+    setErrors((prevErrors) => ({ ...prevErrors, bancoSeleccionado: "" }));
   };
 
-
-  // Calcular cuota con formato de miles
   const calcularCuota = () => {
     const monto = parseFloat(formData.monto.replace(/\./g, ""));
     const plazo = parseInt(formData.plazo.replace(/\./g, ""));
-    const tasaMensual = (interes / 100) / 12;
+    const tasaMensual = interes / 100 / 12;
 
     if (!isNaN(monto) && !isNaN(plazo) && interes > 0) {
       const cuotaMensual = Math.round((monto * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -plazo)));
@@ -105,26 +104,54 @@ const handleBlur = (e) => {
   };
 
   const handleFileUpload = (event, tipoDocumento) => {
-    const files = Array.from(event.target.files); 
+    const files = Array.from(event.target.files);
     setFormData((prevData) => ({
       ...prevData,
       documentos: {
         ...prevData.documentos,
-        [tipoDocumento]: [...prevData.documentos[tipoDocumento], ...files], 
+        [tipoDocumento]: [...prevData.documentos[tipoDocumento], ...files],
       },
     }));
   };
 
-  const handleNext = () => {
-    setStep(prev => prev < 5 ? prev + 1 : prev);
+  const validateStep = () => {
+    const newErrors = {};
+    if (step === 1) {
+      ["nombres", "documento", "fechaNacimiento", "estadoCivil", "celular", "correo", "direccion", "barrio", "ciudad"].forEach((field) => {
+        if (!formData[field]) newErrors[field] = "Este campo es obligatorio";
+      });
+    } else if (step === 2) {
+      ["empresa", "ruc", "actividadEmpresa", "ingresos", "antiguedad"].forEach((field) => {
+        if (!formData[field]) newErrors[field] = "Este campo es obligatorio";
+      });
+    } else if (step === 3) {
+      ["referencia1", "relacion1", "celular1"].forEach((field) => {
+        if (!formData[field]) newErrors[field] = "Este campo es obligatorio";
+      });
+    } else if (step === 4) {
+      ["monto", "plazo", "destino"].forEach((field) => {
+        if (!formData[field]) newErrors[field] = "Este campo es obligatorio";
+      });
+      if (!formData.bancoSeleccionado) newErrors["bancoSeleccionado"] = "Seleccione un banco";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
+
+  const handleNext = () => {
+    if (validateStep()) {
+      setStep((prev) => (prev < 5 ? prev + 1 : prev));
+    }
+  };
+
   const handleBack = () => {
-    setStep(prev => prev > 1 ? prev - 1 : prev);
+    setStep((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Formulario Enviado:", formData);
+    if (!validateStep()) return;
+
     setMensaje("✅ Solicitud Procesada con Éxito");
 
     const formDataToSend = new FormData();
@@ -136,11 +163,17 @@ const handleBlur = (e) => {
       });
     });
 
-    fetch("http://localhost:4000/prestamos", {
+    fetch(API_BASE.prestamos, {
       method: "POST",
       body: formDataToSend,
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`❌ Error HTTP: ${res.status} - ${text}`);
+        }
+        return res.json();
+      })
       .then((nuevoClienteCreado) => {
         agregarPrestamo(nuevoClienteCreado);
         navigate("/clientes");
@@ -160,7 +193,7 @@ const handleBlur = (e) => {
           {/* 📌 SECCIÓN 1: DATOS DEL FIRMANTE */}
       {step === 1 && (
     <fieldset className="prestamos-form-section">
-     <legend>Datos Personales</legend>
+     <legend>Datos Personales (Todos los campos son obligatorios)</legend>
       <div className="prestamos-form-grid">
         <input type="text" name="nombres" placeholder="Nombres y Apellidos" onChange={handleChange} required />
         <input type="text" name="documento" placeholder="N° de Documento" onChange={handleChange} required />
@@ -171,12 +204,12 @@ const handleBlur = (e) => {
         <input type="date" id="fechaNacimiento" name="fechaNacimiento" onChange={handleChange} required />
       </div>
 
-      <input type="text" name="estadoCivil" placeholder="Estado Civil" onChange={handleChange} />
+      <input type="text" name="estadoCivil" placeholder="Estado Civil" onChange={handleChange} required/>
       <input type="text" name="celular" placeholder="N° Celular" onChange={handleChange} required />
-      <input type="email" name="correo" placeholder="Correo Electrónico" onChange={handleChange} />
+      <input type="email" name="correo" placeholder="Correo Electrónico" onChange={handleChange} required/>
       <input type="text" name="direccion" placeholder="Dirección Particular" onChange={handleChange} required />
-      <input type="text" name="barrio" placeholder="Barrio" onChange={handleChange} />
-      <input type="text" name="ciudad" placeholder="Ciudad" onChange={handleChange} />
+      <input type="text" name="barrio" placeholder="Barrio" onChange={handleChange} required/>
+      <input type="text" name="ciudad" placeholder="Ciudad" onChange={handleChange} required/>
     </div>
   </fieldset>
 )}
@@ -184,7 +217,7 @@ const handleBlur = (e) => {
 {/* 📌 SECCIÓN 2: DATOS LABORALES */}
 {step === 2 && (
   <fieldset className="prestamos-form-section">
-    <legend>Datos Laborales</legend>
+    <legend>Datos Laborales (Todos los campos son obligatorios)</legend>
     <div className="prestamos-form-grid">
       <input
         type="text"
@@ -231,19 +264,19 @@ const handleBlur = (e) => {
           {/* 📌 SECCIÓN 3: REFERENCIAS PERSONALES */}
           {step === 3 && (
             <fieldset className="prestamos-form-section">
-              <legend>Referencias Personales</legend>
+              <legend>Referencias Personales (Todos los campos son obligatorios)</legend>
               <div className="prestamos-form-grid">
-                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} />
-                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} />
-                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} />
+                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} required/>
+                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} required/>
+                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} required/>
                 <br></br>
-                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} />
-                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} />
-                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} />
+                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} required/>
+                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} required/>
+                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} required/>
                 <br></br>
-                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} />
-                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} />
-                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} />
+                <input type="text" name="referencia1" placeholder="Nombre y Apellido" onChange={handleChange} required/>
+                <input type="text" name="relacion1" placeholder="Relación" onChange={handleChange} required/>
+                <input type="text" name="celular1" placeholder="N° Celular" onChange={handleChange} required/>
               </div>
             </fieldset>
           )}
@@ -251,11 +284,11 @@ const handleBlur = (e) => {
           {/* 📌 SECCIÓN 4: SOLICITUD DE PRÉSTAMO Y ADJUNTAR DOCUMENTOS */}
 {step === 4 && (
   <fieldset className="prestamos-form-section">
-    <legend>Solicitud de Préstamo</legend>
+    <legend>Solicitud de Préstamo (Todos los campos son obligatorios)</legend>
     <div className="prestamos-form-grid">
       <input type="text" name="monto" placeholder="Monto del Préstamo" value={formData.monto} onBlur={handleBlur} onChange={handleChange} required />
       <input type="text" name="plazo" placeholder="Plazo" onBlur={handleBlur} onChange={handleChange} required/>
-      <input type="text" name="destino" placeholder="Destino" onChange={handleChange} />
+      <input type="text" name="destino" placeholder="Destino" onChange={handleChange} required/>
 
       <div className="bank-wrapper">
         <select name="bancoSeleccionado" id="bancos" onChange={handleBankSelection} className="bank-select">
@@ -278,7 +311,7 @@ const handleBlur = (e) => {
 
     <fieldset className="prestamos-form-section prestamos-step-4">
       <legend>Adjuntar Documentos</legend>
-      <p className="prestamos-instrucciones">📄 Adjunta los documentos requeridos.</p>
+      <p className="prestamos-instrucciones">📄 Adjunta los documentos requeridos</p>
       <div className="prestamos-documentos-grid">
         {[
           { key: "cedula", label: "Cédula de Identidad" },

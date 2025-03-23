@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import { API_BASE } from "../config";
 
 export const GlobalContext = createContext();
 
@@ -10,25 +11,59 @@ export const GlobalProvider = ({ children }) => {
 
   // 🔹 Cargar clientes desde backend al iniciar
   const fetchClientes = () => {
-    fetch("http://localhost:4000/clientes")
-      .then((response) => response.json())
-      .then((data) => setClientes(data))
-      .catch((error) => console.error("Error al cargar clientes:", error));
+    fetch(API_BASE.clientes)
+  .then(async (res) => {
+    if (!res.ok) {
+      const text = await res.text(); // leemos texto plano en lugar de JSON
+      throw new Error(`❌ Error HTTP: ${res.status} - ${text}`);
+    }
+    return res.json();
+  })
+  .then((data) => {
+    if (Array.isArray(data)) {
+      setClientes(data);
+    } else {
+      console.error("❌ La respuesta de clientes no es un array:", data);
+    }
+  })
+  .catch((err) => console.error("Error al cargar clientes:", err));
   };
 
   useEffect(() => {
-    fetch("http://localhost:4000/clientes")
-      .then((res) => res.json())
-      .then((data) => setClientes(data))
-      .catch((err) => console.error("Error al cargar clientes:", err));
+    fetch(API_BASE.clientes)
+  .then(async (res) => {
+    if (!res.ok) {
+      const text = await res.text(); // leemos texto plano en lugar de JSON
+      throw new Error(`❌ Error HTTP: ${res.status} - ${text}`);
+    }
+    return res.json();
+  })
+  .then((data) => {
+    if (Array.isArray(data)) {
+      setClientes(data);
+    } else {
+      console.error("❌ La respuesta de clientes no es un array:", data);
+    }
+  })
+  .catch((err) => console.error("Error al cargar clientes:", err));
   
-      fetch("http://localhost:4000/mensajes")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("✅ Mensajes cargados:", data);
-        setMensajes(data); // ✅ ya es un array
-      })
-      .catch((err) => console.error("Error al cargar mensajes:", err));
+  fetch(API_BASE.mensajes)
+  .then(async (res) => {
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`❌ Error HTTP: ${res.status} - ${text}`);
+    }
+    return res.json();
+  })
+  .then((data) => {
+    if (Array.isArray(data)) {
+      setMensajes(data);
+    } else {
+      console.error("❌ La respuesta de mensajes no es un array:", data);
+    }
+  })
+  .catch((err) => console.error("Error al cargar mensajes:", err));
+
   }, []);
 
   const agregarMensaje = (mensajeNuevo) => {

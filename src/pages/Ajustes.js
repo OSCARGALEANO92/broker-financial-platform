@@ -2,80 +2,81 @@ import React, { useState, useEffect } from "react";
 import "./Ajustes.css";
 
 const Ajustes = () => {
+  const userRole = localStorage.getItem("userRole") || "";
+
   const [formData, setFormData] = useState({
-    nombreUsuario: localStorage.getItem("nombreUsuario") || "",
-    correo: localStorage.getItem("correo") || "",
-    nombre: localStorage.getItem("nombre") || "",
-    apellidos: localStorage.getItem("apellidos") || "",
-    web: localStorage.getItem("web") || "",
+    nombreUsuario: localStorage.getItem(`${userRole}_nombreUsuario`) || "",
+    correo: localStorage.getItem(`${userRole}_correo`) || "",
+    nombre: localStorage.getItem(`${userRole}_nombre`) || "",
+    apellidos: localStorage.getItem(`${userRole}_apellidos`) || "",
+    telefono: localStorage.getItem(`${userRole}_telefono`) || "",
+    institucion: localStorage.getItem(`${userRole}_institucion`) || "",
     contraseña: "",
   });
 
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
-  // Manejar cambios en los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Alternar visibilidad de la contraseña
   const toggleMostrarContrasena = () => {
     setMostrarContrasena(!mostrarContrasena);
   };
 
-  // Guardar datos en localStorage
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Guardar en localStorage (excepto la contraseña)
-    localStorage.setItem("nombreUsuario", formData.nombreUsuario);
-    localStorage.setItem("correo", formData.correo);
-    localStorage.setItem("nombre", formData.nombre);
-    localStorage.setItem("apellidos", formData.apellidos);
-    localStorage.setItem("web", formData.web);
+    localStorage.setItem(`${userRole}_nombreUsuario`, formData.nombreUsuario);
+    localStorage.setItem(`${userRole}_correo`, formData.correo);
+    localStorage.setItem(`${userRole}_nombre`, formData.nombre);
+    localStorage.setItem(`${userRole}_apellidos`, formData.apellidos);
+    localStorage.setItem(`${userRole}_telefono`, formData.telefono);
+    localStorage.setItem(`${userRole}_institucion`, formData.institucion);
 
     alert("Datos actualizados correctamente.");
   };
 
   return (
     <div className="ajustes-container">
-      {/* 📌 Título */}
-      <h2 className="ajustes-title">Ajustes de Usuario</h2>
+      <h2 className="ajustes-title">Ajustes de Usuario ({userRole})</h2>
 
-      {/* 📌 Formulario */}
       <form onSubmit={handleSubmit} className="ajustes-form">
-        {/* Nombre de usuario */}
         <div className="ajustes-input-group">
           <label>Nombre de usuario <em>(obligatorio)</em></label>
           <input type="text" name="nombreUsuario" value={formData.nombreUsuario} onChange={handleChange} required />
         </div>
 
-        {/* Correo electrónico */}
         <div className="ajustes-input-group">
           <label>Correo electrónico <em>(obligatorio)</em></label>
           <input type="email" name="correo" value={formData.correo} onChange={handleChange} required />
         </div>
 
-        {/* Nombre */}
         <div className="ajustes-input-group">
           <label>Nombre</label>
           <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} />
         </div>
 
-        {/* Apellidos */}
         <div className="ajustes-input-group">
           <label>Apellidos</label>
           <input type="text" name="apellidos" value={formData.apellidos} onChange={handleChange} />
         </div>
 
-        {/* Web */}
-        <div className="ajustes-input-group">
-          <label>Teléfono</label>
-          <input type="text" name="web" value={formData.web} onChange={handleChange} />
-        </div>
+        {(userRole === "admin" || userRole === "banco" || userRole === "broker") && (
+          <div className="ajustes-input-group">
+            <label>Institución</label>
+            <input type="text" name="institucion" value={formData.institucion} onChange={handleChange} />
+          </div>
+        )}
 
-        {/* Contraseña */}
+        {(userRole === "banco" || userRole === "broker") && (
+          <div className="ajustes-input-group">
+            <label>Teléfono</label>
+            <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} />
+          </div>
+        )}
+
         <div className="ajustes-input-group">
           <label>Contraseña</label>
           <input type={mostrarContrasena ? "text" : "password"} name="contraseña" value={formData.contraseña} onChange={handleChange} />
@@ -84,7 +85,6 @@ const Ajustes = () => {
           </button>
         </div>
 
-        {/* Botón Guardar Cambios */}
         <button type="submit" className="ajustes-button">Guardar Cambios</button>
       </form>
     </div>
@@ -92,6 +92,8 @@ const Ajustes = () => {
 };
 
 export default Ajustes;
+
+
 
 
 

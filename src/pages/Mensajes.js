@@ -1,82 +1,45 @@
 import React, { useContext, useState } from "react";
-import { GlobalContext } from "../context/GlobalContext"; // Importar el contexto global
+import { GlobalContext } from "../context/GlobalContext";
 import "./Mensajes.css";
 
 const Mensajes = () => {
-  const { mensajes, clientes, agregarMensaje, setClientes } = useContext(GlobalContext);
+  const { mensajes, clientes } = useContext(GlobalContext);
   const [filaExpandida, setFilaExpandida] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
   const mensajesPorPagina = 10;
 
-  if (!Array.isArray(mensajes)) {
-    return <p>Error: los mensajes no se pudieron cargar correctamente.</p>;
-  }
- 
- const mensajesCompletos = mensajes.map((m) => {
-  const cliente = clientes.find((c) => c.documento === m.documento);
-  return {
-    ...m,
-    banco: cliente?.banco || "-",
-    monto: cliente?.montosolicitado?.toLocaleString() || "-",
-    estado: cliente?.estado || "-",
-    fechaCarga: cliente?.fechaCreacion ? new Date(cliente.fechaCreacion).toLocaleDateString() : "-",
-  };
-}); 
+  // Agrupar mensajes por documento
+  const mensajesAgrupados = mensajes.reduce((acc, mensaje) => {
+    if (!acc[mensaje.documento]) acc[mensaje.documento] = [];
+    acc[mensaje.documento].push(mensaje);
+    return acc;
+  }, {});
 
-  // 🔹 Funciones de Paginación
-  const totalPaginas = Math.ceil(mensajesCompletos.length / mensajesPorPagina);
-  const indiceInicial = (paginaActual - 1) * mensajesPorPagina;
-  const indiceFinal = indiceInicial + mensajesPorPagina;
-  const mensajesPaginados = mensajesCompletos.slice(indiceInicial, indiceFinal);
+  // Convertir a array para paginar
+  const mensajesPorCliente = Object.entries(mensajesAgrupados).map(([documento, historial]) => {
+    const cliente = clientes.find((c) => c.documento === documento);
+    const ultimo = historial[historial.length - 1];
 
-  const paginaAnterior = () => {
-    if (paginaActual > 1) setPaginaActual(paginaActual - 1);
-  };
+    return {
+      documento,
+      nombre: cliente?.nombre || historial[0]?.nombre || "Sin nombre",
+      banco: cliente?.banco || "-",
+      monto: cliente?.montosolicitado?.toLocaleString() || "-",
+      fechaCarga: cliente?.fechaCreacion ? new Date(cliente.fechaCreacion).toLocaleDateString() : "-",
+      estado: cliente?.estado || ultimo.estado,
+      mensaje: ultimo.mensaje,
+      historial
+    };
+  });
 
-  const paginaSiguiente = () => {
-    if (paginaActual < totalPaginas) setPaginaActual(paginaActual + 1);
-  };
+  const totalPaginas = Math.ceil(mensajesPorCliente.length / mensajesPorPagina);
+  const mensajesPaginados = mensajesPorCliente.slice(
+    (paginaActual - 1) * mensajesPorPagina,
+    paginaActual * mensajesPorPagina
+  );
+
   const toggleDetalles = (documento) => {
     setFilaExpandida((prev) => (prev === documento ? null : documento));
-  };
-
-  const handleGuardar = (id) => {
-    const cliente = clientes.find((c) => c.id === id);
-    const mensajeTexto = mensajes[id];
-    const nuevoEstado = cliente?.estado;
-
-    if (!cliente || !mensajeTexto || !nuevoEstado) {
-      alert("Todos los campos son obligatorios.");
-      return;
-    }
-
-    const nuevoMensaje = {
-      documento: cliente.documento,
-      nombre: cliente.nombre,
-      mensaje: mensajeTexto,
-      estado: nuevoEstado,
-    };
-
-    fetch("http://localhost:4000/mensajes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(nuevoMensaje),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        agregarMensaje(data);
-        setClientes((prevClientes) =>
-          prevClientes.map((c) =>
-            c.id === id ? { ...c, estado: nuevoEstado } : c
-          )
-        );
-        alert(
-          `✅ Cliente ${cliente.nombre}: Estado actualizado a "${nuevoEstado}" con mensaje: "${mensajeTexto}"`
-        );
-      })
-      .catch((err) => console.error("Error al enviar mensaje:", err));
-
-    setFilaExpandida(null);
   };
 
   return (
@@ -97,62 +60,49 @@ const Mensajes = () => {
           </tr>
         </thead>
         <tbody>
-          {mensajesPaginados.map((mensaje, index) => (
+          {mensajesPaginados.map((cliente, index) => (
             <React.Fragment key={index}>
-              {/* 🔹 Fila principal */}
               <tr>
-                <td>{mensaje.documento}</td>
-                <td>{mensaje.nombre}</td>
-                <td>{mensaje.banco}</td>
-                <td>{mensaje.monto}</td>
-                <td>{mensaje.fechaCarga}</td>
+                <td>{cliente.documento}</td>
+                <td>{cliente.nombre}</td>
+                <td>{cliente.banco}</td>
+                <td>{cliente.monto}</td>
+                <td>{cliente.fechaCarga}</td>
                 <td>
-                <span className={`estado-${mensaje?.estado?.toLowerCase() || 'sin-estado'}`}>
-                 {mensaje?.estado || 'Sin estado'}
-                </span>
+                  <span className={`estado-${cliente.estado?.toLowerCase() || "sin-estado"}`}>
+                    {cliente.estado}
+                  </span>
                 </td>
-                <td>{mensaje.mensaje}</td>
+                <td>{cliente.mensaje}</td>
                 <td>
-                  <button
-                    className="ver-mas-btn"
-                    onClick={() => toggleDetalles(mensaje.documento)}
-                  >
-                    {filaExpandida === mensaje.documento ? "Cerrar" : "Ver Más"}
+                  <button className="ver-mas-btn" onClick={() => toggleDetalles(cliente.documento)}>
+                    {filaExpandida === cliente.documento ? "Cerrar" : "Ver Más"}
                   </button>
                 </td>
               </tr>
 
-              {/* 🔹 Fila expandida con tabla de log de mensajes */}
-              {filaExpandida === mensaje.documento && (
+              {filaExpandida === cliente.documento && (
                 <tr className="detalles-fila">
                   <td colSpan="8">
-                      <h2>Historial de Mensajes</h2>
-                      <table className="log-mensajes-table">
-                        <thead>
-                          <tr>
-                            <th>Fecha y Hora</th>
-                            <th>Usuario</th>
-                            <th>Mensaje</th>
-                            <th>Estado</th>
+                    <h2>Historial de Mensajes</h2>
+                    <table className="log-mensajes-table">
+                      <thead>
+                        <tr>
+                          <th>Fecha y Hora</th>
+                          <th>Usuario</th>
+                          <th>Mensaje</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cliente.historial.map((msg, i) => (
+                          <tr key={i}>
+                            <td>{new Date(msg.fecha).toLocaleString()}</td>
+                            <td>{msg.nombre}</td>
+                            <td>{msg.mensaje}</td>
+                            <td className={`estado-${msg.estado.toLowerCase()}`}>{msg.estado}</td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {mensaje.historialMensajes && mensaje.historialMensajes.length > 0 ? (
-                          mensaje.historialMensajes.map((log, logIndex) => (
-                            <tr key={logIndex}>
-                              <td>{log.fechaHora}</td>
-                              <td>{log.usuario}</td>
-                              <td>{log.mensaje}</td>
-                              <td className={`estado-${log.estado.toLowerCase()}`}>
-                                {log.estado}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="4">No hay mensajes registrados.</td>
-                          </tr>
-                        )}
+                        ))}
                       </tbody>
                     </table>
                   </td>
@@ -162,15 +112,13 @@ const Mensajes = () => {
           ))}
         </tbody>
       </table>
-    {/* 🔹 Paginación */}
-    <div className="mensajes-pagination">
-        <button onClick={paginaAnterior} disabled={paginaActual === 1} className="pagination-btn">
+
+      <div className="mensajes-pagination">
+        <button onClick={() => setPaginaActual(p => Math.max(p - 1, 1))} disabled={paginaActual === 1}>
           ← Anterior
         </button>
-        <span className="pagina-texto">
-          Página {paginaActual} de {totalPaginas}
-        </span>
-        <button onClick={paginaSiguiente} disabled={paginaActual === totalPaginas} className="pagination-btn">
+        <span>Página {paginaActual} de {totalPaginas}</span>
+        <button onClick={() => setPaginaActual(p => Math.min(p + 1, totalPaginas))} disabled={paginaActual === totalPaginas}>
           Siguiente →
         </button>
       </div>
@@ -178,8 +126,10 @@ const Mensajes = () => {
   );
 };
 
-
 export default Mensajes;
+
+
+
 
 
 

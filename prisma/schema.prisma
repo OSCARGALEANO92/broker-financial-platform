@@ -58,6 +58,8 @@ model Cliente {
   plazo            String?
   destino          String?
   coodeudor        Boolean  @default(false)
+
+ documentos       Json?
 }
 
 model Mensaje {

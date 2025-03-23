@@ -5,10 +5,10 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import "./Clientes.css";
+import { API_BASE } from "../config";
 
 const Clientes = () => {
-  const { clientes, setClientes } = useContext(GlobalContext); // Obtener clientes desde el contexto
-
+  const { clientes, setClientes } = useContext(GlobalContext);
   const navigate = useNavigate();
   const [searchDocumento, setSearchDocumento] = useState("");
   const [selectedEstado, setSelectedEstado] = useState("");
@@ -32,22 +32,28 @@ const Clientes = () => {
     };
   }, []);
 
- // Filtro de clientes
- const filteredClientes = clientes.filter((cliente) => {
-  return (
-    (searchDocumento === "" || cliente.documento.includes(searchDocumento)) &&
-    (selectedEstado === "" || cliente.estado === selectedEstado) &&
-    (selectedBanco === "" || cliente.banco === selectedBanco)
-  );
-});
+  const filteredClientes = clientes.map((cliente) => {
+    const historial = cliente.historialMensajes || [];
+    const ultimo = historial[historial.length - 1];
 
-  // Índices para la paginación
+    return {
+      ...cliente,
+      ultimoMensaje: ultimo?.mensaje || mensajes[cliente.documento] || "Sin mensajes",
+      ultimaFecha: ultimo?.fecha || cliente.fecha || "",
+    };
+  }).filter((cliente) => {
+    return (
+      (searchDocumento === "" || cliente.documento.includes(searchDocumento)) &&
+      (selectedEstado === "" || cliente.estado === selectedEstado) &&
+      (selectedBanco === "" || cliente.banco === selectedBanco)
+    );
+  });
+
   const indiceInicial = (paginaActual - 1) * clientesPorPagina;
   const indiceFinal = indiceInicial + clientesPorPagina;
   const clientesPaginados = filteredClientes.slice(indiceInicial, indiceFinal);
   const totalPaginas = Math.ceil(filteredClientes.length / clientesPorPagina);
 
-  // Funciones de paginación
   const siguientePagina = () => {
     if (paginaActual < totalPaginas) {
       setPaginaActual(paginaActual + 1);
@@ -64,7 +70,6 @@ const Clientes = () => {
     navigate(`/clientes/${cliente.documento}`, { state: { cliente } });
   };
 
-  // Manejar cambios en el mensaje
   const handleMensajeChange = (id, value) => {
     setMensajes((prevMensajes) => ({
       ...prevMensajes,
@@ -72,7 +77,6 @@ const Clientes = () => {
     }));
   };
 
-  // Manejar cambios en el estado
   const handleEstadoChange = (id, value) => {
     setEstados((prevEstados) => ({
       ...prevEstados,
@@ -80,81 +84,94 @@ const Clientes = () => {
     }));
   };
 
-  // Guardar la acción
   const handleGuardar = (id) => {
     const mensaje = mensajes[id] || "";
-    const nuevoEstado = estados[id] || "Pendiente";
-
-    if (userRole === "banco" && mensaje.trim() === "") {
-      alert("❌ Debes escribir un mensaje antes de actualizar el estado.");
-      return;
-    }
-
     const cliente = clientes.find((c) => c.id === id);
     if (!cliente) return;
 
+    let nuevoEstado = cliente.estado;
+
+    if (userRole === "banco") {
+      nuevoEstado = estados[id] || "Pendiente";
+      if (mensaje.trim() === "") {
+        alert("❌ Debes escribir un mensaje antes de actualizar el estado.");
+        return;
+      }
+    }
+
     const nuevoMensaje = {
-      ...cliente, // Enviar toda la ficha del cliente
+      ...cliente,
       mensaje,
       estado: nuevoEstado,
     };
 
-    fetch("http://localhost:4000/mensajes", {
+    fetch(API_BASE.mensajes, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(nuevoMensaje),
     })
       .then((res) => res.json())
       .then((data) => {
+        const mensajeFinal = data.historialMensajes?.slice(-1)[0]?.mensaje || mensaje;
+        const fechaActualizacion = data.historialMensajes?.slice(-1)[0]?.fecha || new Date().toISOString();
+
         setMensajes((prev) => ({
           ...prev,
-          [cliente.documento]: mensaje,
+          [cliente.documento]: mensajeFinal,
         }));
 
         setClientes((prevClientes) =>
           prevClientes.map((c) =>
-            c.id === id ? { ...c, estado: nuevoEstado } : c
+            c.id === id
+              ? {
+                  ...c,
+                  estado: nuevoEstado,
+                  fecha: fechaActualizacion,
+                  historialMensajes: data.historialMensajes,
+                }
+              : c
           )
         );
 
         setActiveMenu(null);
-        alert(`✅ Cliente ${id}: Estado actualizado a "${nuevoEstado}" con mensaje: "${mensaje}"`);
+        alert(`✅ Cliente ${id}: ${userRole === "banco" ? `Estado actualizado a \"${nuevoEstado}\"` : "Mensaje enviado"}`);
       })
       .catch((err) => console.error("Error al enviar mensaje:", err));
   };
-   // Exportar a Excel
-   const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(filteredClientes.map(cliente => ({
-      Fechacreacion: cliente.fechaCreacion,
-      Documento: cliente.documento,
-      Nombre: cliente.nombre,
-      "Monto Solicitado": cliente.montosolicitado,
-      Banco: cliente.banco,
-      Estado: cliente.estado,
-      Fecha: cliente.fecha,
-      "Último Mensaje": mensajes[cliente.documento] || ""
-    })));
+
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      filteredClientes.map((cliente) => ({
+        "Fecha Creación": new Date(cliente.fechaCreacion).toLocaleString(),
+        Documento: cliente.documento,
+        Nombre: cliente.nombre,
+        "Monto Solicitado": cliente.montosolicitado.toLocaleString(),
+        Banco: cliente.banco,
+        Estado: cliente.estado,
+        "Fecha Actualización": cliente.ultimaFecha ? new Date(cliente.ultimaFecha).toLocaleString() : "-",
+        "Último Mensaje": cliente.ultimoMensaje
+      }))
+    );
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Clientes Filtrados");
     XLSX.writeFile(wb, "Clientes_Filtrados.xlsx");
   };
 
-  // Exportar a PDF
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.text("Lista de Clientes", 14, 10);
     autoTable(doc, {
-      head: [["Fecha Creacion", "Documento", "Nombre", "Teléfono", "Dirección", "Préstamo", "Banco", "Estado", "Fecha"]],
+      head: [["Fecha Creación", "Documento", "Nombre", "Monto Solicitado", "Banco", "Estado", "Fecha Actualización", "Último Mensaje"]],
       body: filteredClientes.map((cliente) => [
-        cliente.fechaCreacion,
+        new Date(cliente.fechaCreacion).toLocaleString(),
         cliente.documento,
         cliente.nombre,
-        cliente.montosolicitado,
+        cliente.montosolicitado.toLocaleString(),
         cliente.banco,
         cliente.estado,
-        cliente.fecha,
-        mensajes[cliente.documento] || ""
+        cliente.ultimaFecha ? new Date(cliente.ultimaFecha).toLocaleString() : "-",
+        cliente.ultimoMensaje
       ]),
     });
     doc.save("Clientes.pdf");
@@ -164,10 +181,9 @@ const Clientes = () => {
     <div className="clientes-container">
       <h1 className="clientes-title">Lista de Clientes</h1>
 
-      {/* Filtros */}
       <div className="clientes-filtros">
         <input type="text" placeholder="Buscar por documento" value={searchDocumento} onChange={(e) => setSearchDocumento(e.target.value)} className="clientes-input" />
-       
+
         <select value={selectedEstado} onChange={(e) => setSelectedEstado(e.target.value)} className="clientes-select">
           <option value="">Filtrar por Estado</option>
           <option value="Pendiente">Pendiente</option>
@@ -186,96 +202,73 @@ const Clientes = () => {
         <button onClick={exportToExcel} className="clientes-export-btn">Exportar Excel</button>
         <button onClick={exportToPDF} className="clientes-export-btn">Exportar PDF</button>
       </div>
-  
+
       <table className="clientes-table-container">
         <thead>
           <tr>
-          <th className="centrado">Fecha Creación</th>
+            <th className="centrado">Fecha Creación</th>
             <th className="centrado">Documento</th>
             <th>Nombre</th>
             <th>Monto solicitado</th>
             <th>Banco</th>
             <th>Estado</th>
-            <th>Fecha</th>
+            <th>Fecha Actualización</th>
             <th>Último Mensaje</th>
             <th>Detalles</th>
-            {/* **✅ Mostrar Acciones solo si el usuario es "banco"** */}
             {(userRole === "banco" || userRole === "broker") && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
-          {filteredClientes.map((cliente, index) => (
+          {clientesPaginados.map((cliente, index) => (
             <tr key={index}>
-              <td className="centrado">{cliente.fechaCreacion}</td>
+              <td className="centrado">{new Date(cliente.fechaCreacion).toLocaleString()}</td>
               <td className="centrado">{cliente.documento}</td>
               <td className="centrado">{cliente.nombres || cliente.nombre}</td>
-              <td className="centrado">{cliente.montosolicitado}</td>
+              <td className="centrado">{cliente.montosolicitado.toLocaleString()}</td>
               <td className="centrado">{cliente.banco}</td>
               <td className={`estado-${(cliente.estado || '').toLowerCase()}`}>{cliente.estado || "Sin estado"}</td>
-              <td>{cliente.fecha}</td>
-              <td>{mensajes[cliente.documento] || "Sin mensajes"}</td>
+              <td>{cliente.ultimaFecha ? new Date(cliente.ultimaFecha).toLocaleString() : "-"}</td>
+              <td>{cliente.ultimoMensaje}</td>
               <td>
                 <button className="clientes-button" onClick={() => handleVerDetalles(cliente)}>
                   Ver Detalles
                 </button>
               </td>
-            {/* **✅ Mostrar el botón de Acciones solo si el usuario es "banco"** */}
-            {(userRole === "banco" || userRole === "broker") && (
-            <td className="acciones-container">
-            {/* Botón de Acciones */}
-            <button 
-              className="acciones-btn" 
-              onClick={() => setActiveMenu(activeMenu === cliente.id ? null : cliente.id)}
-            >
-              📋 Acciones
-            </button>
+              {(userRole === "banco" || userRole === "broker") && (
+                <td className="acciones-container">
+                  <button className="acciones-btn" onClick={() => setActiveMenu(activeMenu === cliente.id ? null : cliente.id)}>📋 Acciones</button>
 
-            {/* Menú desplegable */}
-            {activeMenu === cliente.id && (
-              <div className="acciones-menu">
-                {userRole === "banco" && (
+                  {activeMenu === cliente.id && (
+                    <div className="acciones-menu">
+                      {userRole === "banco" && (
                         <>
-                <select value={estados[cliente.id] || cliente.estado} onChange={(e) => handleEstadoChange(cliente.id, e.target.value)} className="accion-select">
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Verificando">Verificando</option>
-                  <option value="Aprobado">Aprobado</option>
-                  <option value="Rechazado">Rechazado</option>
-                </select>
-                <textarea 
-                  className="mensaje-textarea" 
-                  placeholder="Mensaje..."
-                  value={mensajes[cliente.id] || ""}
-                  onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}
-                ></textarea>
-                </>
-              )}
-              {userRole === "broker" && (
-                        <textarea
-                          className="mensaje-textarea"
-                          placeholder="Mensaje..."
-                          value={mensajes[cliente.id] || ""}
-                          onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}
-                        ></textarea>
-              )}
-                <button className="enviar-mensaje" onClick={() => handleGuardar(cliente.id)}>
-                  {userRole === "banco" ? "Verificar" : "Enviar"}</button>
-              </div>
-            )}
-          </td>  
+                          <select value={estados[cliente.id] || cliente.estado} onChange={(e) => handleEstadoChange(cliente.id, e.target.value)} className="accion-select">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Verificando">Verificando</option>
+                            <option value="Aprobado">Aprobado</option>
+                            <option value="Rechazado">Rechazado</option>
+                          </select>
+                          <textarea className="mensaje-textarea" placeholder="Mensaje..." value={mensajes[cliente.id] || ""} onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}></textarea>
+                        </>
+                      )}
+                      {userRole === "broker" && (
+                        <textarea className="mensaje-textarea" placeholder="Mensaje..." value={mensajes[cliente.id] || ""} onChange={(e) => handleMensajeChange(cliente.id, e.target.value)}></textarea>
+                      )}
+                      <button className="enviar-mensaje" onClick={() => handleGuardar(cliente.id)}>
+                        {userRole === "banco" ? "Verificar" : "Enviar"}
+                      </button>
+                    </div>
+                  )}
+                </td>
               )}
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* 📌 Paginación */}
       <div className="clientes-pagination">
-        <button onClick={anteriorPagina} disabled={paginaActual === 1}>
-          ← Anterior
-          </button>
-        <button onClick={siguientePagina} disabled={paginaActual === totalPaginas}>
-          Siguiente →
-          </button>
+        <button onClick={anteriorPagina} disabled={paginaActual === 1}>← Anterior</button>
+        <button onClick={siguientePagina} disabled={paginaActual === totalPaginas}>Siguiente →</button>
       </div>
     </div>
   );

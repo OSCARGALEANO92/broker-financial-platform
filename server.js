@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors'); // ✅ Importar cors
+const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const multer = require('multer');
 const fs = require('fs');
@@ -8,7 +8,17 @@ const app = express();
 const port = 4000;
 const prisma = new PrismaClient();
 
-// Carpeta de destino para los archivos
+const corsOptions = {
+  origin: ['http://3.229.249.89:3000', 'http://dev.homebridge.com:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = './uploads';
@@ -25,26 +35,38 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.use(cors());
-
-app.use(express.json());
-
 app.get('/', (req, res) => {
   res.send('Servidor corriendo correctamente');
 });
 
-// Obtener todos los clientes
 app.get('/clientes', async (req, res) => {
   try {
     const clientes = await prisma.cliente.findMany();
     res.json(clientes);
   } catch (error) {
-    console.error('Error al obtener clientes:', error);
-    res.status(500).json({ error: 'Error al obtener clientes' });
+    console.error('❌ Error al obtener clientes:', error);
+    res.status(500).json({ error: 'Error al obtener clientes', detalle: error.message });
   }
 });
 
-// Crear un cliente a partir de un préstamo
+app.get("/clientes/:documento", async (req, res) => {
+  const { documento } = req.params;
+  try {
+    const cliente = await prisma.cliente.findUnique({
+      where: { documento },
+    });
+
+    if (!cliente) {
+      return res.status(404).json({ error: "Cliente no encontrado." });
+    }
+
+    res.json(cliente);
+  } catch (error) {
+    console.error("❌ Error al obtener cliente:", error);
+    res.status(500).json({ error: "Error al obtener cliente", detalle: error.message });
+  }
+});
+
 app.post(
   '/prestamos',
   upload.fields([
@@ -105,12 +127,14 @@ app.post(
       res.status(201).json(nuevoCliente);
     } catch (error) {
       console.error('Error al crear cliente:', error);
+      if (error.code === 'P2002') {
+        return res.status(400).json({ error: 'El cliente ya existe con ese documento.' });
+      }
       res.status(500).json({ error: 'Error al crear cliente', detalles: error.message });
     }
   }
 );
 
-// Ruta para actualizar el estado del cliente y registrar el mensaje
 app.post("/mensajes", async (req, res) => {
   const { documento, nombre, mensaje, estado } = req.body;
 
@@ -125,6 +149,11 @@ app.post("/mensajes", async (req, res) => {
       },
     });
 
+    await prisma.cliente.update({
+      where: { documento },
+      data: { estado },
+    });
+
     res.status(201).json(nuevoMensaje);
   } catch (error) {
     console.error("❌ Error al guardar mensaje:", error);
@@ -132,10 +161,9 @@ app.post("/mensajes", async (req, res) => {
   }
 });
 
-
 app.get("/mensajes", async (req, res) => {
   try {
-    const mensajes = await prisma.mensaje.findMany(); // ✅ modelo en minúsculas
+    const mensajes = await prisma.mensaje.findMany();
     res.json(mensajes);
   } catch (error) {
     console.error("❌ Error al obtener mensajes:", error);
@@ -143,8 +171,6 @@ app.get("/mensajes", async (req, res) => {
   }
 });
 
-
-// Crear broker
 app.post('/brokers', async (req, res) => {
   const { nombre, email } = req.body;
   try {
@@ -163,7 +189,6 @@ app.post('/brokers', async (req, res) => {
   }
 });
 
-// Obtener brokers
 app.get('/brokers', async (req, res) => {
   try {
     const brokers = await prisma.broker.findMany();
@@ -174,7 +199,6 @@ app.get('/brokers', async (req, res) => {
   }
 });
 
-// Actualizar broker
 app.put('/brokers/:id', async (req, res) => {
   const { id } = req.params;
   const { nombre, email } = req.body;
@@ -189,21 +213,39 @@ app.put('/brokers/:id', async (req, res) => {
   }
 });
 
-// Eliminar broker
-app.delete('/brokers/:id', async (req, res) => {
-  const { id } = req.params;
+// ✅ Subir documentos desde cliente detalle
+app.post("/clientes/:documento/upload", upload.array("archivos"), async (req, res) => {
+  const { documento } = req.params;
+  const archivosSubidos = req.files;
+
+  if (!archivosSubidos || archivosSubidos.length === 0) {
+    return res.status(400).json({ error: "No se adjuntaron archivos." });
+  }
+
+  const archivos = archivosSubidos.map((file) => `/uploads/${file.filename}`);
+
   try {
-    await prisma.broker.delete({
-      where: { id: Number(id) },
+    const clienteActual = await prisma.cliente.findUnique({ where: { documento } });
+    if (!clienteActual) return res.status(404).json({ error: "Cliente no encontrado." });
+
+    const nuevosDocumentos = {
+      ...(clienteActual.documentos || {}),
+      otros: [...(clienteActual.documentos?.otros || []), ...archivos],
+    };
+
+    await prisma.cliente.update({
+      where: { documento },
+      data: { documentos: nuevosDocumentos },
     });
-    res.json({ message: 'Broker eliminado correctamente' });
+
+    res.status(200).json({ mensaje: "Documentos subidos", archivos });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar broker' });
+    console.error("Error al subir documentos:", error);
+    res.status(500).json({ error: "Error al subir documentos" });
   }
 });
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-
 

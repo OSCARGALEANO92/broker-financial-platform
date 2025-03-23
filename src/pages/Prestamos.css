@@ -290,6 +290,18 @@ label {
   min-width: 200px; /* Ancho mínimo para evitar que se encimen */
 }
 
+.errors {
+  border: 2px solid red !important;
+}
+
+.errors-text {
+  color: red;
+  font-size: 12px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+
 
 @media (max-width: 1024px) {
   .prestamos-container {

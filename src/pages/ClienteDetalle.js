@@ -1,22 +1,86 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { API_BASE } from "../config";
 import "./ClienteDetalle.css";
 
 const ClienteDetalle = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const cliente = location.state?.cliente;
+  const [cliente, setCliente] = useState(location.state?.cliente || null);
+  const [documentosNuevos, setDocumentosNuevos] = useState([]);
+  const userRole = localStorage.getItem("userRole");
+
+  useEffect(() => {
+    if (cliente?.documento) {
+      fetch(`${API_BASE.clientes}/${cliente.documento}`)
+        .then((res) => res.json())
+        .then((data) => setCliente(data))
+        .catch((err) => console.error("Error al cargar cliente:", err));
+    }
+  }, [cliente?.documento]);
 
   if (!cliente) {
     return <p>No se encontró información del cliente.</p>;
   }
+
+  const handleFileChange = (e) => {
+    setDocumentosNuevos(Array.from(e.target.files));
+  };
+
+  const handleUpload = async () => {
+    if (documentosNuevos.length === 0) {
+      alert("Selecciona al menos un documento para subir.");
+      return;
+    }
+
+    const formData = new FormData();
+    documentosNuevos.forEach((file) => {
+      formData.append("archivos", file);
+    });
+
+    try {
+      const res = await fetch(`${API_BASE.clientes}/${cliente.documento}/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("✅ Archivos subidos con éxito:", JSON.stringify(data.archivos));
+
+        const updatedCliente = await fetch(`${API_BASE.clientes}/${cliente.documento}`);
+        const clienteActualizado = await updatedCliente.json();
+        setCliente(clienteActualizado);
+      } else {
+        throw new Error(data.error || "Error al subir documentos");
+      }
+      setDocumentosNuevos([]);
+    } catch (err) {
+      console.error("Error al subir documentos:", err);
+      alert("❌ Error al subir documentos");
+    }
+  };
+
+  const handleDescargarTodo = () => {
+    if (!cliente.documentos) return;
+
+    Object.values(cliente.documentos).flat().forEach((file) => {
+      if (typeof file === "string") {
+        const link = document.createElement("a");
+        link.href = file;
+        link.download = file.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    });
+  };
 
   return (
     <div className="cliente-detalle-container">
       <h1>Ficha del Cliente</h1>
 
       <div className="detalle-content">
-        {/* 📌 Ficha del Cliente */}
         <div className="ficha-cliente">
           <h2>Información Personal</h2>
           <p><strong>Documento:</strong> {cliente.documento}</p>
@@ -31,9 +95,8 @@ const ClienteDetalle = () => {
           <p><strong>Nacionalidad:</strong> {cliente.nacionalidad}</p>
         </div>
 
-        {/* 📌 Datos Adicionales */}
         <div className="datos-adicionales">
-        <h2>Datos Laborales</h2>
+          <h2>Datos Laborales</h2>
           <p><strong>Empresa:</strong> {cliente.empresa}</p>
           <p><strong>RUC:</strong> {cliente.ruc}</p>
           <p><strong>Actividad Empresa:</strong> {cliente.actividadEmpresa}</p>
@@ -41,7 +104,6 @@ const ClienteDetalle = () => {
           <p><strong>Fecha de Cobro:</strong> {cliente.fechaCobro}</p>
         </div>
 
-        {/* 📌 Referencias Personales */}
         <div className="datos-adicionales">
           <h2>Referencias Personales</h2>
           {[1, 2, 3].map((i) => (
@@ -54,7 +116,6 @@ const ClienteDetalle = () => {
           ))}
         </div>
 
-        {/* 📌 Datos del Préstamo */}
         <div className="datos-adicionales">
           <h2>Datos del Préstamo</h2>
           <p><strong>Banco:</strong> {cliente.banco || cliente.bancoSeleccionado}</p>
@@ -64,7 +125,6 @@ const ClienteDetalle = () => {
           <p><strong>Estado:</strong> {cliente.estado}</p>
         </div>
 
-        {/* Documentos Adjuntos */}
         <div className="documentos-adjuntos">
           <h2>Documentos Adjuntos</h2>
           <ul>
@@ -75,8 +135,8 @@ const ClienteDetalle = () => {
                   {Array.isArray(archivos) && archivos.length > 0 ? (
                     archivos.map((file, j) => (
                       <div key={j}>
-                        {file instanceof File ? (
-                          <a href={URL.createObjectURL(file)} target="_blank" rel="noopener noreferrer">
+                        {typeof file === "string" ? (
+                          <a href={file} target="_blank" rel="noopener noreferrer">
                             Ver Documento {j + 1} 📄
                           </a>
                         ) : (
@@ -93,6 +153,16 @@ const ClienteDetalle = () => {
               <p>No se adjuntaron documentos.</p>
             )}
           </ul>
+
+          {userRole === "broker" && (
+            <div className="adjuntar-nuevos">
+              <h3>Agregar Documentos</h3>
+              <input type="file" multiple onChange={handleFileChange} />
+              <button onClick={handleUpload}>Subir Documentos</button>
+            </div>
+          )}
+
+          <button onClick={handleDescargarTodo} className="descargar-lote">⬇ Descargar Todos</button>
         </div>
       </div>
 
@@ -102,3 +172,4 @@ const ClienteDetalle = () => {
 };
 
 export default ClienteDetalle;
+
