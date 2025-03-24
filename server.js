@@ -177,6 +177,65 @@ app.get("/mensajes", async (req, res) => {
   }
 });
 
+app.get('/bancos', async (req, res) => {
+  try {
+    const bancos = await prisma.banco.findMany();
+    res.json(bancos);
+  } catch (error) {
+    console.error('Error al obtener bancos:', error);
+    res.status(500).json({ error: 'Error al obtener bancos' });
+  }
+});
+
+app.post('/bancos', async (req, res) => {
+  const { entidad, tasaInteres, usuario = 'admin' } = req.body;
+  if (!entidad || !tasaInteres) return res.status(400).json({ error: 'Entidad y tasa de interés son requeridos' });
+  try {
+    const banco = await prisma.banco.create({ data: { entidad, tasaInteres: parseFloat(tasaInteres) } });
+
+    await prisma.mensaje.create({
+      data: {
+        documento: 'sistema',
+        nombre: usuario,
+        mensaje: `➕ Banco agregado: ${entidad} (${tasaInteres}%)`,
+        estado: 'informativo',
+        fecha: new Date(),
+      },
+    });
+
+    res.status(201).json(banco);
+  } catch (error) {
+    console.error('Error al crear banco:', error);
+    res.status(500).json({ error: 'Error al crear banco' });
+  }
+});
+
+app.put('/bancos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { tasaInteres, usuario = 'admin' } = req.body;
+  try {
+    const banco = await prisma.banco.update({
+      where: { id: Number(id) },
+      data: { tasaInteres: parseFloat(tasaInteres) },
+    });
+
+    await prisma.mensaje.create({
+      data: {
+        documento: 'sistema',
+        nombre: usuario,
+        mensaje: `✏️ Tasa de interés actualizada para ${banco.entidad} (${tasaInteres}%)`,
+        estado: 'informativo',
+        fecha: new Date(),
+      },
+    });
+
+    res.json(banco);
+  } catch (error) {
+    console.error('Error al actualizar banco:', error);
+    res.status(500).json({ error: 'Error al actualizar banco' });
+  }
+});
+
 app.post('/brokers', async (req, res) => {
   const { nombre, email } = req.body;
   try {
@@ -250,6 +309,81 @@ app.post("/clientes/:documento/upload", upload.array("archivos"), async (req, re
     res.status(500).json({ error: "Error al subir documentos" });
   }
 });
+
+app.post('/usuarios', async (req, res) => {
+  const { nombreUsuario, correo, nombre, apellidos, telefono, institucion, rol } = req.body;
+
+  if (!correo || !nombreUsuario || !rol) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+
+  try {
+    const usuarioExistente = await prisma.user.findUnique({ where: { email: correo } });
+
+    let usuario;
+    if (usuarioExistente) {
+      usuario = await prisma.user.update({
+        where: { email: correo },
+        data: {
+          nombre,
+          apellidos,
+          telefono,
+          institucion,
+          name: nombreUsuario,
+          rol,
+        },
+      });
+    } else {
+      usuario = await prisma.user.create({
+        data: {
+          email: correo,
+          nombre,
+          apellidos,
+          telefono,
+          institucion,
+          name: nombreUsuario,
+          rol,
+        },
+      });
+    }
+
+    res.status(200).json(usuario);
+  } catch (error) {
+    console.error('❌ Error al guardar usuario:', error);
+    res.status(500).json({ error: 'Error al guardar usuario' });
+  }
+});
+
+app.get('/usuarios', async (req, res) => {
+  try {
+    const usuarios = await prisma.user.findMany();
+    res.json(usuarios);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
+});
+
+app.post('/usuarios', async (req, res) => {
+  const { name, email, telefono } = req.body;
+  if (!name || !email) return res.status(400).json({ error: 'Nombre y email son requeridos' });
+
+  try {
+    const nuevoUsuario = await prisma.user.create({
+      data: {
+        name,
+        email,
+        telefono,
+      },
+    });
+
+    res.status(201).json(nuevoUsuario);
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+    res.status(500).json({ error: 'Error al crear usuario' });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);

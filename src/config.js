@@ -13,4 +13,5 @@ export const API_BASE = {
   usuarios: `${SERVER_URL}/usuarios`, // si luego subís usuarios a AWS
   brokers: `${SERVER_URL}/brokers`,
   uploadDocumentos: (documento) => `${SERVER_URL}/clientes/${documento}/upload`,
+  bancos: `${SERVER_URL}/bancos`, // agregado si estás usando bancos del backend
 };

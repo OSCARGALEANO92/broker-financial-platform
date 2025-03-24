@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, IconButton } from "@mui/material"; // ✅ Agregué IconButton
 import { Link } from "react-router-dom";
-import { FaUsers, FaHandHoldingUsd, FaUniversity, FaEnvelope, FaCogs, FaTachometerAlt } from "react-icons/fa";
+import { FaUsers, FaHandHoldingUsd, FaUniversity, FaEnvelope, FaCogs, FaTachometerAlt, FaUserCog } from "react-icons/fa";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material"; 
 import "./Sidebar.css";
 
@@ -46,6 +46,9 @@ const Sidebar = () => {
           )}
           {(userRole === "admin" || userRole === "broker") && (
             <SidebarLink to="/bancos" icon={<FaUniversity />} text="Bancos" />
+          )}
+          {userRole === "admin" && (
+            <SidebarLink to="/usuarios" icon={<FaUserCog />} text="Usuarios" />
           )}
         </div>
 

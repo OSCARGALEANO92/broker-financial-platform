@@ -22,3 +22,22 @@ export const createBroker = async (nombre, email) => {
     console.error('Error al crear broker:', error);
   }
 };
+
+export const getUsuarios = async () => {
+  try {
+    const response = await api.get('/usuarios');
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    return [];
+  }
+};
+
+export const createUsuario = async (data) => {
+  try {
+    const response = await api.post('/usuarios', data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+  }
+};

@@ -79,8 +79,10 @@ const Prestamos = () => {
   };
 
   useEffect(() => {
-    const bancosGuardados = JSON.parse(localStorage.getItem("bancosDisponibles")) || [];
-    setBancos(bancosGuardados);
+    fetch(API_BASE.bancos)
+      .then((res) => res.json())
+      .then((data) => setBancos(data))
+      .catch((err) => console.error("Error al cargar bancos:", err));
   }, []);
 
   const handleBankSelection = (e) => {

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Ajustes.css";
+import { API_BASE } from "../config";
 
 const Ajustes = () => {
   const userRole = localStorage.getItem("userRole") || "";
@@ -25,10 +26,10 @@ const Ajustes = () => {
     setMostrarContrasena(!mostrarContrasena);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Guardar ajustes personalizados por rol
+    // Guardar en localStorage
     localStorage.setItem(`${userRole}_nombreUsuario`, formData.nombreUsuario);
     localStorage.setItem(`${userRole}_correo`, formData.correo);
     localStorage.setItem(`${userRole}_nombre`, formData.nombre);
@@ -36,7 +37,20 @@ const Ajustes = () => {
     localStorage.setItem(`${userRole}_telefono`, formData.telefono);
     localStorage.setItem(`${userRole}_institucion`, formData.institucion);
 
-    alert("✅ Datos actualizados correctamente y guardados en localStorage.");
+    try {
+      const response = await fetch(`${API_BASE.usuarios}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rol: userRole, ...formData })
+      });
+
+      if (!response.ok) throw new Error("❌ Error al guardar en el backend");
+
+      alert("✅ Datos actualizados correctamente y guardados en backend y localStorage.");
+    } catch (error) {
+      console.error("Error al guardar en backend:", error);
+      alert("❌ Hubo un error al guardar los datos en el backend.");
+    }
   };
 
   return (
@@ -136,6 +150,7 @@ const Ajustes = () => {
 };
 
 export default Ajustes;
+
 
 
 

@@ -1,0 +1,82 @@
+/* 📌 Contenedor Principal del formulario nuevo usuario */
+.nuevo-usuario-container {
+    width: calc(100vw - 250px);
+    min-height: 100vh; /* permite expansión vertical */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 100px 20px 40px 20px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+    overflow-y: auto;
+    margin-left: 10px;
+  }
+  
+  
+  /* 📌 Título centrado y separado */
+  .nuevo-usuario-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: #333;
+    width: 100%;
+  }
+  
+  /* 📌 Formulario centrado */
+  .nuevo-usuario-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  
+  }
+  
+  .nuevo-usuario-form input,
+  .nuevo-usuario-form select {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+  
+  .nuevo-usuario-form input:focus,
+  .nuevo-usuario-form select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .nuevo-usuario-form button {
+    background-color: #28a745;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .nuevo-usuario-form button:hover {
+    background-color: #218838;
+  }
+  
+  /* 📌 Ajuste responsive */
+  @media (max-width: 768px) {
+    .nuevo-usuario-container {
+      width: 100%;
+      margin-left: 0;
+      padding: 70px 10px 20px 10px;
+    }
+  
+    .nuevo-usuario-form {
+      padding: 1.5rem;
+    }
+  }
+  
+  
+  

@@ -1,59 +1,85 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { GlobalContext } from "../context/GlobalContext"; // Importar el contexto global
+import { GlobalContext } from "../context/GlobalContext";
+import { API_BASE } from "../config";
 import "./Bancos.css";
 
 const Bancos = () => {
-  const userRole = localStorage.getItem("userRole"); // Obtener rol del usuario
+  const userRole = localStorage.getItem("userRole");
   const navigate = useNavigate();
-  const { clientes } = useContext(GlobalContext); // Obtener clientes del contexto
-  
-  const bancosGuardados = JSON.parse(localStorage.getItem("bancosDisponibles")) || [
-    { id: 1, entidad: "Banco Nacional de Fomento", tasaInteres: 12 },
-    { id: 2, entidad: "Banco Sudameris", tasaInteres: 10.5 },
-    { id: 3, entidad: "Banco Familiar", tasaInteres: 13 },
-    { id: 4, entidad: "Banco Basa", tasaInteres: 9 },
-    { id: 5, entidad: "Banco Ueno", tasaInteres: 9 },
-    { id: 6, entidad: "Banco Itau", tasaInteres: 8 },
-    { id: 7, entidad: "Banco GNB", tasaInteres: 10 },
-  ];
-  
-  const [bancos, setBancos] = useState(bancosGuardados);
+  const { clientes } = useContext(GlobalContext);
+
+  const [bancos, setBancos] = useState([]);
   const [editando, setEditando] = useState(false);
   const [nuevaTasa, setNuevaTasa] = useState({});
+  const [nuevoBanco, setNuevoBanco] = useState({ entidad: "", tasaInteres: "" });
 
   useEffect(() => {
-    localStorage.setItem("bancosDisponibles", JSON.stringify(bancos));
-  }, [bancos]);
+    fetch(API_BASE.bancos)
+      .then(res => res.json())
+      .then(setBancos)
+      .catch(err => console.error("Error al cargar bancos:", err));
+  }, []);
 
-  // 🔹 Calcular la cantidad de solicitudes por banco
   const calcularCantidadSolicitudes = (nombreBanco) => {
     return clientes.filter(cliente => cliente.banco === nombreBanco).length;
   };
 
-  // Manejar cambios en la tasa de interés
   const handleTasaChange = (id, value) => {
-    setNuevaTasa((prev) => ({ ...prev, [id]: value }));
+    setNuevaTasa(prev => ({ ...prev, [id]: value }));
   };
 
-  // Guardar cambios
   const guardarCambios = () => {
-    const bancosActualizados = bancos.map((banco) =>
-      nuevaTasa[banco.id] !== undefined
-        ? { ...banco, tasaInteres: parseFloat(nuevaTasa[banco.id]) || banco.tasaInteres }
-        : banco
-    );
+    const actualizaciones = Object.entries(nuevaTasa).map(([id, tasa]) => {
+      return fetch(`${API_BASE.bancos}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tasaInteres: tasa, usuario: userRole })
+      });
+    });
 
-    setBancos(bancosActualizados);
-    setEditando(false);
-    alert("✅ Tasa de interés actualizada con éxito.");
-    setEditando(false);
-    alert("✅ Tasa de interés actualizada con éxito.");
+    Promise.all(actualizaciones)
+      .then(() => {
+        alert("✅ Tasa de interés actualizada con éxito.");
+        window.location.reload();
+      })
+      .catch(err => console.error("Error al guardar cambios:", err));
   };
 
-  // ✅ Enviar el nombre del banco en la URL correctamente
   const handleViewDetails = (nombreBanco) => {
     navigate(`/bancos/${encodeURIComponent(nombreBanco)}`);
+  };
+
+  const agregarBanco = () => {
+    if (!nuevoBanco.entidad || !nuevoBanco.tasaInteres) return alert("Completa los campos del nuevo banco");
+
+    fetch(API_BASE.bancos, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...nuevoBanco, usuario: userRole })
+    })
+      .then(res => res.json())
+      .then(() => {
+        alert("✅ Banco agregado");
+        setNuevoBanco({ entidad: "", tasaInteres: "" });
+        window.location.reload();
+      })
+      .catch(err => console.error("Error al agregar banco:", err));
+  };
+
+  const eliminarBanco = (id) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este banco?")) return;
+
+    fetch(`${API_BASE.bancos}/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario: userRole })
+    })
+      .then(() => {
+        alert("🗑 Banco eliminado");
+        setBancos(prev => prev.filter(b => b.id !== id));
+      })
+      .catch(err => console.error("Error al eliminar banco:", err));
   };
 
   return (
@@ -63,52 +89,76 @@ const Bancos = () => {
         Aquí puedes ver la lista de bancos y la cantidad de solicitudes de préstamo asociadas a cada uno.
       </p>
 
-      {/* 🔹 Botón de editar (solo para Admin) */}
       {(userRole === "admin" || userRole === "broker") && (
         <button className="editar-btn" onClick={() => setEditando(!editando)}>
           {editando ? "Cancelar" : "✏️ Editar Tasa de Interés"}
         </button>
       )}
 
-      
-        <table>
-          <thead>
-            <tr>
-              <th>Banco</th>
-              <th>Cantidad de Solicitudes</th>
-              <th>Tasa de Interés (%)</th>
-              <th>Detalles</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bancos.map((banco) => (
-              <tr key={banco.id}>
-                <td>{banco.entidad}</td>
-                <td>{calcularCantidadSolicitudes(banco.entidad)}</td>
+      {(userRole === "admin") && (
+        <div className="nuevo-banco-form">
+          <input
+            type="text"
+            placeholder="Nombre del banco"
+            value={nuevoBanco.entidad}
+            onChange={(e) => setNuevoBanco(prev => ({ ...prev, entidad: e.target.value }))}
+          />
+          <input
+            type="number"
+            step="0.1"
+            placeholder="Tasa de interés"
+            value={nuevoBanco.tasaInteres}
+            onChange={(e) => setNuevoBanco(prev => ({ ...prev, tasaInteres: e.target.value }))}
+          />
+          <button onClick={agregarBanco}>➕ Agregar Banco</button>
+        </div>
+      )}
+
+      <table>
+        <thead>
+          <tr>
+            <th>Banco</th>
+            <th>Cantidad de Solicitudes</th>
+            <th>Tasa de Interés (%)</th>
+            <th>Detalles</th>
+            {userRole === "admin" && <th>Acción</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {bancos.map((banco) => (
+            <tr key={banco.id}>
+              <td>{banco.entidad}</td>
+              <td>{calcularCantidadSolicitudes(banco.entidad)}</td>
+              <td>
+                {editando ? (
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={nuevaTasa[banco.id] !== undefined ? nuevaTasa[banco.id] : banco.tasaInteres}
+                    onChange={(e) => handleTasaChange(banco.id, e.target.value)}
+                    className="tasa-input"
+                  />
+                ) : (
+                  `${banco.tasaInteres} %`
+                )}
+              </td>
+              <td>
+                <button className="bancos-details-button" onClick={() => handleViewDetails(banco.entidad)}>
+                  🔍 Ver Detalles
+                </button>
+              </td>
+              {userRole === "admin" && (
                 <td>
-                  {editando ? (
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={nuevaTasa[banco.id] !== undefined ? nuevaTasa[banco.id] : banco.tasaInteres}
-                      onChange={(e) => handleTasaChange(banco.id, e.target.value)}
-                      className="tasa-input"
-                    />
-                  ) : (
-                    `${banco.tasaInteres} %`
-                  )}
-                </td>
-                <td className="bancos-details-cell">
-                  <button className="bancos-details-button" onClick={() => handleViewDetails(banco.entidad)}>
-                    🔍 Ver Detalles
+                  <button className="bancos-delete-button" onClick={() => eliminarBanco(banco.id)}>
+                    🗑 Eliminar
                   </button>
                 </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      {/* 🔹 Botón de Guardar Cambios (solo visible cuando se edita) */}
       {editando && (
         <button className="guardar-btn" onClick={guardarCambios}>
           💾 Guardar Cambios
@@ -119,6 +169,9 @@ const Bancos = () => {
 };
 
 export default Bancos;
+
+
+
 
 
 

@@ -71,3 +71,11 @@ model Mensaje {
   fecha     DateTime @default(now())
 }
 
+model Banco {
+  id          Int     @id @default(autoincrement())
+  entidad     String
+  tasaInteres Float
+}
+
+
+
